@@ -1,0 +1,8 @@
+{
+    "BomatrbList": {"results": [
+        {"Code": "0", "Value": "Display in Manual Creation"},
+        {"Code": "1", "Value": "Display in Style BOM, include in Desc"},
+        {"Code": "2", "Value": "Display in Style BOM, do not include in Desc"},
+        {"Code": "3", "Value": "Do not display in Style BOM, include in Desc"}
+    ]}
+}
