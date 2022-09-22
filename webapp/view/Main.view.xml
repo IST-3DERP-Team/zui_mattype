@@ -360,7 +360,7 @@
                             </uiT:rowSettingsTemplate>
                             <uiT:extension>
                                 <Toolbar>
-                                    <Text text="{i18n>SBU}:" />
+                                    <Text text="{ddtext>/SBU}:" />
                                     <ComboBox
                                         id="cmbSbu"
                                         showSecondaryValues= "false"
@@ -371,7 +371,7 @@
                                         }"
                                         selectionChange="onSelectionChangeSbu"
                                         >
-                                        <core:Item id="liSbu" key="{sbu>Sbu}" text="{sbu>Sbu}"/>
+                                        <core:Item id="liSbu" key="{sbu>SBU}" text="{sbu>SBU}"/>
                                     </ComboBox>
                                     <ToolbarSpacer/>
                                     <SearchField
@@ -435,6 +435,11 @@
                                         press="onColumnProp"
                                         tooltip="Columns"
                                         visible="true" />
+                                    <Button id="btnTabLayoutMatType"
+                                        icon="sap-icon://grid" 
+                                        tooltip="{ddtext>/SAVELAYOUT}" 
+                                        press="onSaveTableLayout"
+                                        visible="true" />
                                 </Toolbar>
                             </uiT:extension>
                             <uiT:layoutData>
@@ -464,7 +469,7 @@
                                     applyContentPadding="false"
                                     select="onTabSelect">
                                     <items>
-                                        <IconTabFilter id="itfMatClassDetail" text="Material Classification" key="matClass">
+                                        <IconTabFilter id="itfMatClassDetail" text="{ddtext>/MATTYPCLSF}" key="matClass">
                                             <uiT:Table id="matClassTab"
                                                 class="tablePadding"
                                                 rows="{matClass>/results}"
@@ -482,7 +487,7 @@
                                                 </uiT:rowSettingsTemplate>
                                                 <uiT:extension>
                                                     <Toolbar>
-                                                        <Text text="Material Type: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
+                                                        <Text text="{ddtext>/MATTYPE}: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
                                                         <ToolbarSpacer/>
                                                         <SearchField
                                                             id="searchFieldMatClass"
@@ -545,11 +550,16 @@
                                                             press="onColumnProp"
                                                             tooltip="Columns"
                                                             visible="true" />    
+                                                        <Button id="btnTabLayoutMatClass"
+                                                            icon="sap-icon://grid" 
+                                                            tooltip="{ddtext>/SAVELAYOUT}" 
+                                                            press="onSaveTableLayout"
+                                                            visible="true" />
                                                     </Toolbar>
                                                 </uiT:extension>
                                             </uiT:Table>
                                         </IconTabFilter>
-                                        <IconTabFilter id="itfMatAttrib" text="Material Attributes" key="matAttrib">
+                                        <IconTabFilter id="itfMatAttrib" text="{ddtext>/ATTRIBCD}" key="matAttrib">
                                             <uiT:Table id="matAttribTab"
                                                 class="tablePadding"
                                                 rows="{matAttrib>/results}"
@@ -567,7 +577,7 @@
                                                 </uiT:rowSettingsTemplate>
                                                 <uiT:extension>
                                                     <Toolbar>
-                                                        <Text text="Material Type: {ui>/activeMatType}, Material Class: {ui>/activeMatClass}" class="selHdrKeyFontStyle" />
+                                                        <Text text="{ddtext>/MATTYPE}: {ui>/activeMatType}, {ddtext>/MATTYPCLS}: {ui>/activeMatClass}" class="selHdrKeyFontStyle" />
                                                         <ToolbarSpacer/>
                                                         <SearchField
                                                             id="searchFieldMatAttrib"
@@ -630,6 +640,11 @@
                                                             press="onColumnProp"
                                                             tooltip="Columns"
                                                             visible="true" />    
+                                                        <Button id="btnTabLayoutMatAttrib"
+                                                            icon="sap-icon://grid" 
+                                                            tooltip="{ddtext>/SAVELAYOUT}" 
+                                                            press="onSaveTableLayout"
+                                                            visible="true" />
                                                     </Toolbar>
                                                 </uiT:extension>
                                             </uiT:Table>
@@ -637,7 +652,7 @@
                                     </items>
                                 </IconTabBar>
                             </IconTabFilter>
-                            <IconTabFilter id="itfBatchCtrl" text="Batch Control" key="batchControl">
+                            <IconTabFilter id="itfBatchCtrl" text="{ddtext>/BATCHCTRL}" key="batchControl">
                                 <uiT:Table id="batchControlTab"
                                     class="tablePadding"
                                     rows="{batchControl>/results}"
@@ -718,6 +733,11 @@
                                                 press="onColumnProp"
                                                 tooltip="Columns"
                                                 visible="true" />    
+                                            <Button id="btnTabLayoutBatchControl"
+                                                icon="sap-icon://grid" 
+                                                tooltip="{ddtext>/SAVELAYOUT}" 
+                                                press="onSaveTableLayout"
+                                                visible="true" />
                                         </Toolbar>
                                     </uiT:extension>
                                 </uiT:Table>
