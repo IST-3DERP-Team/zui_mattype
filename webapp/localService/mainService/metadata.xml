@@ -5,8 +5,10 @@
             <EntityType Name="MatTypeRsc" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="MTART"/>
+                    <PropertyRef Name="SBU"/>
                 </Key>
                 <Property Name="MTART" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Material type" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="SBU" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="SBU" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="MTBEZ" Type="Edm.String" Nullable="false" MaxLength="25" sap:unicode="false" sap:label="Mat.Type Descr." sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <EntityType Name="GMCAttrib" sap:content-version="1">
@@ -54,6 +56,13 @@
                 <Property Name="CREATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Created on" sap:creatable="false" sap:updatable="false"/>
                 <Property Name="UPDATEDBY" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Updated By" sap:creatable="false" sap:updatable="false"/>
                 <Property Name="UPDATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Last Change" sap:creatable="false" sap:updatable="false"/>
+            </EntityType>
+            <EntityType Name="BOMAttribRsc" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="CODE"/>
+                </Key>
+                <Property Name="CODE" Type="Edm.Int16" Nullable="false" sap:unicode="false" sap:label="CODE" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DESCRIP" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="DESCRIP" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <EntityType Name="MaterialType" sap:content-version="1">
                 <Key>
@@ -225,19 +234,13 @@
                 <Property Name="UPDATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Updated By" sap:creatable="false" sap:updatable="false"/>
                 <Property Name="UPDATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Updated Date" sap:creatable="false" sap:updatable="false"/>
             </EntityType>
-            <EntityType Name="BOMAttribRsc" sap:content-version="1">
-                <Key>
-                    <PropertyRef Name="CODE"/>
-                </Key>
-                <Property Name="CODE" Type="Edm.Int16" Nullable="false" sap:unicode="false" sap:label="CODE" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="DESCRIP" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="DESCRIP" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-            </EntityType>
             <EntityContainer Name="ZGW_3DERP_MATTYPE_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
                 <EntitySet Name="MatTypeRscSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MatTypeRsc" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="GMCAttribSet" EntityType="ZGW_3DERP_MATTYPE_SRV.GMCAttrib" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="SBUSet" EntityType="ZGW_3DERP_MATTYPE_SRV.SBU" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="SBUPlantSet" EntityType="ZGW_3DERP_MATTYPE_SRV.SBUPlant" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="MaterialTypeViewSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MaterialTypeView" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="BOMAttribRscSet" EntityType="ZGW_3DERP_MATTYPE_SRV.BOMAttribRsc" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="MaterialTypeSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MaterialType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="MaterialAttribSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MaterialAttrib" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="BatchControlSet" EntityType="ZGW_3DERP_MATTYPE_SRV.BatchControl" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
@@ -248,7 +251,6 @@
                 <EntitySet Name="PurValKeyRscSet" EntityType="ZGW_3DERP_MATTYPE_SRV.PurValKeyRsc" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="MatTypeDescRscSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MatTypeDescRsc" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="MaterialClsSet" EntityType="ZGW_3DERP_MATTYPE_SRV.MaterialCls" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
-                <EntitySet Name="BOMAttribRscSet" EntityType="ZGW_3DERP_MATTYPE_SRV.BOMAttribRsc" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
             </EntityContainer>
             <atom:link rel="self" href="http://159.138.39.203:8000/sap/opu/odata/sap/ZGW_3DERP_MATTYPE_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
             <atom:link rel="latest-version" href="http://159.138.39.203:8000/sap/opu/odata/sap/ZGW_3DERP_MATTYPE_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>

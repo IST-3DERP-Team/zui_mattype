@@ -373,6 +373,8 @@
                                         >
                                         <core:Item id="liSbu" key="{sbu>SBU}" text="{sbu>SBU}"/>
                                     </ComboBox>
+                                    <ToolbarSeparator/>
+                                    <Text text="{ui>/rowCountMatType} {ddtext>/ROWS}" />
                                     <ToolbarSpacer/>
                                     <SearchField
                                         id="searchFieldMatType"
@@ -469,7 +471,7 @@
                                     applyContentPadding="false"
                                     select="onTabSelect">
                                     <items>
-                                        <IconTabFilter id="itfMatClassDetail" text="{ddtext>/MATTYPCLSF}" key="matClass">
+                                        <IconTabFilter id="itfMatClassDetail" text="Material Classification" key="matClass">
                                             <uiT:Table id="matClassTab"
                                                 class="tablePadding"
                                                 rows="{matClass>/results}"
@@ -488,6 +490,8 @@
                                                 <uiT:extension>
                                                     <Toolbar>
                                                         <Text text="{ddtext>/MATTYPE}: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
+                                                        <ToolbarSeparator/>
+                                                        <Text text="{ui>/rowCountMatClass} {ddtext>/ROWS}" />
                                                         <ToolbarSpacer/>
                                                         <SearchField
                                                             id="searchFieldMatClass"
@@ -559,7 +563,7 @@
                                                 </uiT:extension>
                                             </uiT:Table>
                                         </IconTabFilter>
-                                        <IconTabFilter id="itfMatAttrib" text="{ddtext>/ATTRIBCD}" key="matAttrib">
+                                        <IconTabFilter id="itfMatAttrib" text="{ddtext>/MATATTRIB}" key="matAttrib">
                                             <uiT:Table id="matAttribTab"
                                                 class="tablePadding"
                                                 rows="{matAttrib>/results}"
@@ -578,6 +582,8 @@
                                                 <uiT:extension>
                                                     <Toolbar>
                                                         <Text text="{ddtext>/MATTYPE}: {ui>/activeMatType}, {ddtext>/MATTYPCLS}: {ui>/activeMatClass}" class="selHdrKeyFontStyle" />
+                                                        <ToolbarSeparator/>
+                                                        <Text text="{ui>/rowCountMatAttrib} {ddtext>/ROWS}" />
                                                         <ToolbarSpacer/>
                                                         <SearchField
                                                             id="searchFieldMatAttrib"
@@ -671,6 +677,8 @@
                                     <uiT:extension>
                                         <Toolbar>
                                             <Text text="Material Type: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
+                                            <ToolbarSeparator/>
+                                            <Text text="{ui>/rowCountBatchControl} {ddtext>/ROWS}" />
                                             <ToolbarSpacer/>
                                             <SearchField
                                                 id="searchFieldBatchControl"

@@ -1,25 +1,31 @@
 {
     "matType": [
         {"name": "MATTYP", "position": 0, "type": "Edm.String", "visible": true, "required": true, "width": "150px", "hideOnChange": false, "showable": true, "sort": "Ascending",
-            "valueHelp": {"show": true, "items": {"path": "/MatTypeRscSet", "value": "Mtart", "text": "Mtbez"},
-            "suggestionItems": {"path": "/MatTypeRscSet", "text": "{Mtart}", "additionalText": "{Mtbez}", "maxSuggestionWidth": "350px"}}},
+            "valueHelp": {"show": true, "items": {"path": "matTypeRsc>/results", "value": "MTART", "text": "MTBEZ"},
+            "suggestionItems": {"path": "matTypeRsc>/results", "text": "{matTypeRsc>MTART}", "additionalText": "{matTypeRsc>MTBEZ}", "maxSuggestionWidth": "350px"},
+            "filter": "SBU eq '@P1'", "entitySet": "/MatTypeRscSet"}},
         {"name": "GMCNRKEYCD", "position": 5, "type": "Edm.String", "visible": true, "required": false, "width": "200px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/GMCRangeRscSet", "value": "NORANGECD", "text": "SHORTTEXT"},
-            "suggestionItems": {"path": "/GMCRangeRscSet", "text": "{NORANGECD}", "additionalText": "{SHORTTEXT}", "maxSuggestionWidth": "350px"}}},
+            "suggestionItems": {"path": "/GMCRangeRscSet", "text": "{NORANGECD}", "additionalText": "{SHORTTEXT}", "maxSuggestionWidth": "350px"},
+            "filter": "", "entitySet": ""}},
         {"name": "PROCESSCD", "position": 7, "type": "Edm.String", "visible": true, "required": true, "width": "150px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/ProcessRscSet", "value": "PROCESSCD", "text": "DESC1"},
-            "suggestionItems": {"path": "/ProcessRscSet", "text": "{PROCESSCD}", "additionalText": "{DESC1}", "maxSuggestionWidth": "350px"}}},
+            "suggestionItems": {"path": "/ProcessRscSet", "text": "{PROCESSCD}", "additionalText": "{DESC1}", "maxSuggestionWidth": "350px"},
+            "filter": "", "entitySet": ""}},
         {"name": "EXCMATTYP", "position": 8, "type": "Edm.String", "visible": true, "required": false, "width": "150px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/ExcessMatTypeRscSet", "value": "MATTYP", "text": "MTBEZ"},
-            "suggestionItems": {"path": "/ExcessMatTypeRscSet", "text": "{MATTYP}", "additionalText": "{MTBEZ}", "maxSuggestionWidth": "350px"}}}
+            "suggestionItems": {"path": "/ExcessMatTypeRscSet", "text": "{MATTYP}", "additionalText": "{MTBEZ}", "maxSuggestionWidth": "350px"},
+            "filter": "", "entitySet": ""}}
     ],
     "matClass": [
         {"name": "USGCLS", "position": 5, "type": "Edm.String", "visible": true, "required": false, "width": "150px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/UVRscSet", "value": "USGCLS", "text": ""},
-            "suggestionItems": {"path": "/UVRscSet", "text": "{USGCLS}", "additionalText": "", "maxSuggestionWidth": "350px"}}},
+            "suggestionItems": {"path": "/UVRscSet", "text": "{USGCLS}", "additionalText": "", "maxSuggestionWidth": "350px"},
+            "filter": "", "entitySet": ""}},
         {"name": "BOMATRB", "position": 6, "type": "Edm.String", "visible": true, "required": true, "width": "150px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/BOMAttribRscSet", "value": "CODE", "text": "DESCRIP"},
-            "suggestionItems": {"path": "/BOMAttribRscSet", "text": "{CODE}", "additionalText": "{DESCRIP}", "maxSuggestionWidth": "350px"}}}
+            "suggestionItems": {"path": "/BOMAttribRscSet", "text": "{CODE}", "additionalText": "{DESCRIP}", "maxSuggestionWidth": "350px"},
+            "filter": "", "entitySet": ""}}
     ],
     "matAttrib": [],
     "batchControl": []

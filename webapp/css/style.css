@@ -52,3 +52,18 @@
 .showControl {
     display: block;
 }
+
+/* .sapUiTableContentRow.sapUiTableRowSel {
+    background-color: #e8eff6;
+    outline: 0.125rem solid blue;
+    outline-offset: calc(-0.125rem - 0.0625rem);
+}
+
+.sapUiTableTr.sapUiTableRowSelectionCell {
+    background-color: red;
+}
+
+.sapUiTableRowSelectionCell.sapUiTableRowSel {
+    background-color: red;
+} */
+
