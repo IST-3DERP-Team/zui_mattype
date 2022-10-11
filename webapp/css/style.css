@@ -10,12 +10,16 @@
     position: relative;
 }
 
-.tabColor {
+/* .tabColor {
     background-color: aliceblue !important;
-}
+} */
 
 .tablePadding {
     height: 200px;
+}
+
+.sapMTB{
+    background: white !important;
 }
 
 .sapMBtn.activeFiltering .sapMBtnInner {
@@ -51,6 +55,82 @@
 
 .showControl {
     display: block;
+}
+
+.sapMITBHead {
+    position: relative;
+    white-space: nowrap;
+    display: inline-block;
+    margin: 0.25rem 0.25rem 0 0.25rem;
+    margin-top: 0.25rem !important;
+    margin-right: 0.25rem !important;
+    margin-bottom: 0px !important;
+    margin-left: 0.25rem !important;
+    padding-top: 0.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-bottom: 0.5rem !important;  
+    vertical-align: top;
+    font-size: 0.25rem;
+}
+
+.sapUiRespGrid{
+
+    padding-top: 0rem !important;
+
+    padding-bottom: 0rem !important;
+
+    /*padding-right: 2rem;
+
+    padding-left: 2rem;*/
+
+}
+
+.sapMOHR{
+    padding-top: 0.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-bottom: 0.5rem !important;    
+}
+
+.sapMOHRStates {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+    padding-top: 0.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-bottom: 0.5rem !important;  
+    width: 100%;
+    max-width: 95rem;
+    padding: 0;
+}   
+
+.sapMITBHead {
+    position: relative;
+    white-space: nowrap;
+    display: inline-block;
+    margin-top: 0rem !important;
+    margin-right: 0.25rem !important;
+    margin-bottom: 0px !important;
+    margin-left: 0.25rem !important;
+    padding-top: 0rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-bottom: 0rem !important;  
+    vertical-align: top;
+    font-size: 0.25rem;
+}
+
+.sapMITH {
+    box-shadow: inherit;
+    border-top: 0.125rem solid #d1e0ee;
+    border-bottom: 0.125rem solid #d1e0ee;
+}
+
+.sapUiFormResGrid>div {
+    padding: 0rem 0rem !important;
+    box-sizing: border-box !important;
 }
 
 /* .sapUiTableContentRow.sapUiTableRowSel {

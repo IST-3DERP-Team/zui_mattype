@@ -360,7 +360,7 @@
                             </uiT:rowSettingsTemplate>
                             <uiT:extension>
                                 <Toolbar>
-                                    <Text text="{ddtext>/SBU}:" />
+                                    <Text text="{ddtext>/SBU}:" class="sapUiResponsivePadding--header"/>
                                     <ComboBox
                                         id="cmbSbu"
                                         showSecondaryValues= "false"
@@ -453,20 +453,20 @@
                 <uiL:flexContent> -->
                 <!-- <VBox height="50%"> -->
                     <IconTabBar id="itbDetail" 
+                        headerMode="Inline"
                         expanded="{device>/isNoPhone}" 
                         expandable="false" 
-                        class="tabColor" 
-                        headerBackgroundDesign="Transparent" 
+                        class="sapUiNoContentPadding" 
                         stretchContentHeight="true" 
                         applyContentPadding="false"
                         select="onTabSelect">
                         <items>
                             <IconTabFilter id="itfMatClass" text="Material Classification" key="matClass">
                                 <IconTabBar id="itbMatClass" 
+                                    headerMode="Inline"
                                     expanded="{device>/isNoPhone}" 
                                     expandable="false" 
-                                    class="tabColor" 
-                                    headerBackgroundDesign="Transparent" 
+                                    class="sapUiNoContentPadding" 
                                     stretchContentHeight="true" 
                                     applyContentPadding="false"
                                     select="onTabSelect">
