@@ -62,13 +62,28 @@ sap.ui.define([
                 this._oDataBeforeChange = {};
                 this._aInvalidValueState = [];
 
-                // Add KeyUp event in MatTypeTab
-                var oDelegateKeyUp = {
+                this._tableRendered = "";
+                var oTableEventDelegate = {
                     onkeyup: function(oEvent){
                         _this.onKeyUp(oEvent);
+                    },
+
+                    onAfterRendering: function(oEvent) {
+                        _this.onAfterTableRendering(oEvent);
                     }
-                  };
-                this.byId("matTypeTab").addEventDelegate(oDelegateKeyUp);
+                };
+
+                this.byId("matTypeTab").addEventDelegate(oTableEventDelegate);
+                this.byId("matClassTab").addEventDelegate(oTableEventDelegate);
+                this.byId("matAttribTab").addEventDelegate(oTableEventDelegate);
+                this.byId("batchControlTab").addEventDelegate(oTableEventDelegate);
+            },
+
+            onAfterTableRendering: function(oEvent) {
+                if (this._tableRendered !== "") {
+                    this.setActiveRowHighlight(this._tableRendered.replace("Tab", ""));
+                    this._tableRendered = "";
+                }
             },
 
             getSbuPlant() {
@@ -234,10 +249,10 @@ sap.ui.define([
                                     item.UPDATEDDT = dateFormat.format(item.UPDATEDDT);
 
                                 if (index === 0) {
-                                    item.ACTIVE = true;
+                                    item.ACTIVE = "X";
                                 }
                                 else {
-                                    item.ACTIVE = false;
+                                    item.ACTIVE = "";
                                 }
                             });
 
@@ -255,12 +270,7 @@ sap.ui.define([
                             _this.getView().setModel(oJSONModel, "matType");
                             _this.getView().getModel("ui").setProperty("/rowCountMatType", aData.results.length.toString());
                             _this.onRefreshFilter("matType", aFilters, sFilterGlobal);
-
-                            if (aData.results.length > 0) {
-                                setTimeout(() => {
-                                    _this.setActiveRowColor("matTypeTab", 0);
-                                }, 100)
-                            }
+                            _this._tableRendered = "matTypeTab";
 
                             _this.getMatClass();
                             _this.getBatchControl();
@@ -285,7 +295,6 @@ sap.ui.define([
             },
 
             getMatClass() {
-                
                 var oModel = this.getOwnerComponent().getModel();
                 var oJSONModel = new JSONModel();
                 var oEntitySet = "/MaterialClsSet";
@@ -312,6 +321,9 @@ sap.ui.define([
 
                             if (item.UPDATEDDT !== null)
                                 item.UPDATEDDT = dateFormat.format(item.UPDATEDDT);
+
+                            if (index === 0) item.ACTIVE = "X";
+                            else item.ACTIVE = "";
                         })
 
                         oJSONModel.setData(data);
@@ -327,13 +339,13 @@ sap.ui.define([
                         _this.onRefreshFilter("matClass", aFilters, sFilterGlobal);
 
                         if (data.results.length > 0) {
-                            setTimeout(() => {
-                                _this.setActiveRowColor("matClassTab", 0);
-                            }, 100)
+                            _this._tableRendered = "matClassTab";
                             
                             _this.getView().getModel("ui").setProperty("/activeMatClass", data.results[0].MATTYPCLS);
                             _this.getView().getModel("ui").setProperty("/activeMatClassSeq", data.results[0].SEQ);
-                            _this.getMatAttrib();
+                            //_this.getMatAttrib();
+
+                            _this.setActiveRowHighlight("matClass");                            
                         }
                     },
                     error: function (err) { 
@@ -365,6 +377,9 @@ sap.ui.define([
 
                             if (item.UPDATEDDT !== null)
                                 item.UPDATEDDT = dateFormat.format(item.UPDATEDDT);
+
+                            if (index === 0) item.ACTIVE = "X";
+                            else item.ACTIVE = "";
                         })
 
                         oJSONModel.setData(data);
@@ -378,6 +393,8 @@ sap.ui.define([
                         _this.getView().setModel(oJSONModel, "matAttrib");
                         _this.getView().getModel("ui").setProperty("/rowCountMatAttrib", data.results.length.toString());
                         _this.onRefreshFilter("matAttrib", aFilters, sFilterGlobal);
+                        _this._tableRendered = "matAttribTab";
+                        _this.setActiveRowHighlight("matAttrib");
                     },
                     error: function (err) { 
                         _this.closeLoadingDialog();
@@ -410,6 +427,9 @@ sap.ui.define([
 
                             if (item.UPDATEDDT !== null)
                                 item.UPDATEDDT = dateFormat.format(item.UPDATEDDT);
+
+                            if (index === 0) item.ACTIVE = "X";
+                            else item.ACTIVE = "";
                         })
 
                         oJSONModel.setData(data);
@@ -423,6 +443,8 @@ sap.ui.define([
                         _this.getView().setModel(oJSONModel, "batchControl");
                         _this.getView().getModel("ui").setProperty("/rowCountBatchControl", data.results.length.toString());
                         _this.onRefreshFilter("batchControl", aFilters, sFilterGlobal);
+                        _this._tableRendered = "batchControlTab";
+                        _this.setActiveRowHighlight("batchControl");
                     },
                     error: function (err) { 
                         _this.closeLoadingDialog();
@@ -700,18 +722,39 @@ sap.ui.define([
 
             onKeyUp(oEvent) {
                 if ((oEvent.key == "ArrowUp" || oEvent.key == "ArrowDown") && oEvent.srcControl.sParentAggregationName == "rows") {
-                    //this.byId("matTypeTab").setSelectedIndex(0);
-                    var sRowId = this.byId(oEvent.srcControl.sId);
-                    var sRowPath = this.byId(oEvent.srcControl.sId).oBindingContexts["matType"].sPath;
-                    var oRow = this.getView().getModel("matType").getProperty(sRowPath);
-                    var sMattyp = oRow.MATTYP;
-                    this.getView().getModel("ui").setProperty("/activeMatType", sMattyp);
+                    var oTable = this.byId(oEvent.srcControl.sId).oParent;
 
-                    this.getMatClass();
-                    this.getBatchControl();
+                    var sModel = "";
+                    if (oTable.getId().indexOf("matTypeTab") >= 0) sModel = "matType";
+                    else if (oTable.getId().indexOf("matClassTab") >= 0) sModel = "matClass";
+                    else if (oTable.getId().indexOf("matAttribTab") >= 0) sModel = "matAttrib";
+                    else if (oTable.getId().indexOf("batchControlTab") >= 0) sModel = "batchControl";
 
-                    // console.log("onkeyup", oEvent, this.byId("matTypeTab"), this.byId(oEvent.srcControl.sId));
-                    // console.log(this.getView().getModel("matType").getProperty(this.byId(oEvent.srcControl.sId).oBindingContexts["matType"].sPath))
+                    if (sModel == "matType") {
+                        //this.byId("matTypeTab").setSelectedIndex(0);
+                        var sRowId = this.byId(oEvent.srcControl.sId);
+                        var sRowPath = this.byId(oEvent.srcControl.sId).oBindingContexts["matType"].sPath;
+                        var oRow = this.getView().getModel("matType").getProperty(sRowPath);
+                        var sMattyp = oRow.MATTYP;
+                        this.getView().getModel("ui").setProperty("/activeMatType", sMattyp);
+
+                        this.getMatClass();
+                        this.getBatchControl();
+                    }
+
+                    if (this.byId(oEvent.srcControl.sId).getBindingContext(sModel)) {
+                        var sRowPath = this.byId(oEvent.srcControl.sId).getBindingContext(sModel).sPath;
+
+                        oTable.getModel(sModel).getData().results.forEach(row => row.ACTIVE = "");
+                        oTable.getModel(sModel).setProperty(sRowPath + "/ACTIVE", "X");
+
+                        oTable.getRows().forEach(row => {
+                            if (row.getBindingContext(sModel) && row.getBindingContext(sModel).sPath.replace("/results/", "") === sRowPath.replace("/results/", "")) {
+                                row.addStyleClass("activeRow");
+                            }
+                            else row.removeStyleClass("activeRow")
+                        })
+                    }
                 }
             },
 
@@ -1126,10 +1169,22 @@ sap.ui.define([
             },
 
             setRowEditMode(arg) {
-                this.getView().getModel(arg).getData().results.forEach(item => item.Edited = false);
-
                 var oTable = this.byId(arg + "Tab");
+                oTable.clearSelection();
+                
+                this.getView().getModel(arg).getData().results.forEach((item, index) => {
+                    item.Edited = false;
 
+                    if (index === 0) {
+                        item.ACTIVE = "X";
+                    }
+                    else {
+                        item.ACTIVE = "";
+                    }
+                });
+                this.setActiveRowHighlight(arg);
+
+                
                 oTable.getColumns().forEach((col, idx) => {
                     this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
                         .forEach(ci => {
@@ -2039,6 +2094,26 @@ sap.ui.define([
             },
 
             onFilter(oEvent) {
+                var oTable = oEvent.getSource();
+                var sModel;
+
+                if (oTable.getId().indexOf("matTypeTab") >= 0) {
+                    sModel = "matType";
+                }
+                else if (oTable.getId().indexOf("matClassTab") >= 0) {
+                    sModel = "matClass";
+                }
+                else if (oTable.getId().indexOf("matAttribTab") >= 0) {
+                    sModel = "matAttrib";
+                }
+                else if (oTable.getId().indexOf("batchControlTab") >= 0) {
+                    sModel = "batchControl";
+                }
+
+                this.setActiveRowHighlight(sModel);
+
+                // ------------------------------------------------
+
                 var oColumn = oEvent.getParameter("column");
                 var sId = oColumn.sId;
                 var sTable = sId.substring(0, sId.indexOf("Col", 0));
@@ -2074,7 +2149,13 @@ sap.ui.define([
                 var vMatType = oEvent.getParameters().rowBindingContext.getObject().MATTYP;
                 this.getView().getModel("ui").setProperty("/activeMatType", vMatType);
 
-                this.setActiveRowColor("matTypeTab", oEvent.getParameters().rowIndex);
+                var oIconTabBarDetail = this.byId("itbDetail");
+                if (oIconTabBarDetail.getSelectedKey() == "matClass") {
+                    var oIconTabBarMatClass = this.byId("itbMatClass");
+                    oIconTabBarMatClass.setSelectedKey("matClass");
+                }
+
+                this.onCellClick(oEvent);
 
                 this.getMatClass();
                 this.getBatchControl();
@@ -2102,41 +2183,46 @@ sap.ui.define([
                 }
             },
 
-            onCellClickMatClass: function(oEvent) {
-                var vMatClass = oEvent.getParameters().rowBindingContext.getObject().MATTYPCLS;
-                var vMatClassSeq = oEvent.getParameters().rowBindingContext.getObject().SEQ;
+            onCellClickMatClass(oEvent) {
+                var oRow = oEvent.getParameters().rowBindingContext.getObject();
+                var vMatClass = oRow.MATTYPCLS;
+                var vMatClassSeq = oRow.SEQ;
 
                 this.getView().getModel("ui").setProperty("/activeMatClass", vMatClass);
                 this.getView().getModel("ui").setProperty("/activeMatClassSeq", vMatClassSeq);
+                
+                //this.getMatAttrib();
 
-                this.setActiveRowColor("matClassTab", oEvent.getParameters().rowIndex);
-
-                this.getMatAttrib();
+                this._rowIndex = oEvent.getParameters().rowIndex;
+                setTimeout(() => {
+                    var oTable = this.getView().byId("matClassTab");
+                    var sModel = "matClass";
+                    var sRowPath = "/results/" + this._rowIndex;
+                    oTable.getModel(sModel).getData().results.forEach(row => row.ACTIVE = "");
+                    oTable.getModel(sModel).setProperty(sRowPath + "/ACTIVE", "X");
+    
+                    oTable.getRows().forEach(row => {
+                        if (row.getBindingContext(sModel) && row.getBindingContext(sModel).sPath.replace("/results/", "") === sRowPath.replace("/results/", "")) {
+                            row.addStyleClass("activeRow");
+                        }
+                        else row.removeStyleClass("activeRow")
+                    })
+                }, 1);
             },
 
             onCellClickMatAttrib(oEvent) {
-                this.setActiveRowColor("matAttribTab", oEvent.getParameters().rowIndex);
+                this.onCellClick(oEvent);
             },
 
             onCellClickBatchControl(oEvent) {
-                this.setActiveRowColor("batchControlTab", oEvent.getParameters().rowIndex);
-            },
-
-            setActiveRowColor(pTable, pRowIndex) {
-                // console.log("setActiveRowColor", pTable, pRowIndex);
-                // var oTable = this.getView().byId(pTable);
-                // oTable.setSelectedIndex(pRowIndex);
-                // var tableId = this.byId(pTable).getId();
-                // $("#" + tableId + " .activeRow").removeClass("activeRow")
-                // this.byId(pTable).getRows()[pRowIndex].addStyleClass("activeRow");
+                this.onCellClick(oEvent);
             },
 
             onTabSelect(oEvent) {
                 this._selectedTabKey = oEvent.getParameters().selectedKey;
-                setTimeout(() => {
-                    this.setActiveRowColor(this._selectedTabKey + "Tab", 0);
-                }, 100)
-                
+                if (this._selectedTabKey == "matAttrib") {
+                    this.getMatAttrib();
+                }
             },
 
             filterGlobally: function(oEvent) {
@@ -2701,6 +2787,114 @@ sap.ui.define([
                         _this.closeLoadingDialog();
                     }
                 });                
+            },
+
+            onFirstVisibleRowChanged: function (oEvent) {
+                var oTable = oEvent.getSource();
+                var sModel;
+
+                if (oTable.getId().indexOf("matTypeTab") >= 0) {
+                    sModel = "matType";
+                }
+                else if (oTable.getId().indexOf("matClassTab") >= 0) {
+                    sModel = "matClass";
+                }
+                else if (oTable.getId().indexOf("matAttribTab") >= 0) {
+                    sModel = "matAttrib";
+                }
+                else if (oTable.getId().indexOf("batchControlTab") >= 0) {
+                    sModel = "batchControl";
+                }
+
+                console.log("onFirstVisibleRowChanged", sModel)
+
+                setTimeout(() => {
+                    var oData = oTable.getModel(sModel).getData().results;
+                    var iStartIndex = oTable.getBinding("rows").iLastStartIndex;
+                    var iLength = oTable.getBinding("rows").iLastLength + iStartIndex;
+
+                    if (oTable.getBinding("rows").aIndices.length > 0) {
+                        for (var i = iStartIndex; i < iLength; i++) {
+                            var iDataIndex = oTable.getBinding("rows").aIndices.filter((fItem, fIndex) => fIndex === i);
+
+                            if (oData[iDataIndex].ACTIVE === "X") oTable.getRows()[iStartIndex === 0 ? i : i - iStartIndex].addStyleClass("activeRow");
+                            else oTable.getRows()[iStartIndex === 0 ? i : i - iStartIndex].removeStyleClass("activeRow");
+                        }
+                    }
+                    else {
+                        for (var i = iStartIndex; i < iLength; i++) {
+                            if (oData[i].ACTIVE === "X") oTable.getRows()[iStartIndex === 0 ? i : i - iStartIndex].addStyleClass("activeRow");
+                            else oTable.getRows()[iStartIndex === 0 ? i : i - iStartIndex].removeStyleClass("activeRow");
+                        }
+                    }
+                }, 1);
+            },
+
+            onColumnUpdated: function (oEvent) {
+                var oTable = oEvent.getSource();
+                var sModel;
+
+                if (oTable.getId().indexOf("matTypeTab") >= 0) {
+                    sModel = "matType";
+                }
+                else if (oTable.getId().indexOf("matClassTab") >= 0) {
+                    sModel = "matClass";
+                }
+                else if (oTable.getId().indexOf("matAttribTab") >= 0) {
+                    sModel = "matAttrib";
+                }
+                else if (oTable.getId().indexOf("batchControlTab") >= 0) {
+                    sModel = "batchControl";
+                }
+
+                this.setActiveRowHighlight(sModel);
+            },
+
+            setActiveRowHighlight(arg) {
+                var oTable = this.byId(arg + "Tab");
+
+                setTimeout(() => {
+                    var iActiveRowIndex = oTable.getModel(arg).getData().results.findIndex(item => item.ACTIVE === "X");
+                    oTable.getRows().forEach((row, idx) => {
+                        if (row.getBindingContext(arg) && +row.getBindingContext(arg).sPath.replace("/results/", "") === iActiveRowIndex) {
+                            row.addStyleClass("activeRow");
+                        }
+                        else {
+                            row.removeStyleClass("activeRow");
+                        }
+                    })
+                }, 2);
+            },
+
+            onCellClick: function(oEvent) {
+                if (oEvent.getParameters().rowBindingContext) {
+                    var oTable = oEvent.getSource(); //this.byId("ioMatListTab");
+                    var sRowPath = oEvent.getParameters().rowBindingContext.sPath;
+                    var sModel;
+
+                    if (oTable.getId().indexOf("matTypeTab") >= 0) {
+                        sModel = "matType";
+                    }
+                    else if (oTable.getId().indexOf("matClassTab") >= 0) {
+                        sModel = "matClass";
+                    }
+                    else if (oTable.getId().indexOf("matAttribTab") >= 0) {
+                        sModel = "matAttrib";
+                    }
+                    else if (oTable.getId().indexOf("batchControlTab") >= 0) {
+                        sModel = "batchControl";
+                    }
+
+                    oTable.getModel(sModel).getData().results.forEach(row => row.ACTIVE = "");
+                    oTable.getModel(sModel).setProperty(sRowPath + "/ACTIVE", "X");
+
+                    oTable.getRows().forEach(row => {
+                        if (row.getBindingContext(sModel) && row.getBindingContext(sModel).sPath.replace("/results/", "") === sRowPath.replace("/results/", "")) {
+                            row.addStyleClass("activeRow");
+                        }
+                        else row.removeStyleClass("activeRow");
+                    })
+                }
             },
 
             getCaption() {

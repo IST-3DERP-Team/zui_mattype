@@ -10,10 +10,6 @@
     position: relative;
 }
 
-/* .tabColor {
-    background-color: aliceblue !important;
-} */
-
 .tablePadding {
     height: 200px;
 }
@@ -46,7 +42,7 @@
 }
 
 .activeRow {
-    background-color: #E5F0FA 
+    background-color: #e1ebf3 !important;
 }
 
 .hideControl {
@@ -79,11 +75,6 @@
     padding-top: 0rem !important;
 
     padding-bottom: 0rem !important;
-
-    /*padding-right: 2rem;
-
-    padding-left: 2rem;*/
-
 }
 
 .sapMOHR{

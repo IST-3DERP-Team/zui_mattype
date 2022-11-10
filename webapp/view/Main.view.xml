@@ -7,6 +7,16 @@
     xmlns:core="sap.ui.core"
     height="100%">
 
+    <Page id="page" enableScrolling="false" class="sapUiNoContentPadding" showHeader="false">
+        <dependents>
+            <core:CommandExecution id="CE_NEW" command="New" enabled="true" execute="onCreate('')" />
+            <core:CommandExecution id="CE_EDIT" command="Edit" enabled="true" execute="onEdit('')" />
+            <core:CommandExecution id="CE_DELETE" command="Delete" enabled="true" execute="onDelete('')" />
+            <core:CommandExecution id="CE_SAVE" command="Save" enabled="true" execute="onSave('')" />
+            <core:CommandExecution id="CE_CANCEL" command="Cancel" enabled="true" execute="onCancel('')" />
+            <core:CommandExecution id="CE_REFRESH" command="Refresh" enabled="true" execute="onRefresh" />
+        </dependents>
+        <content>
     
             <!-- <uiL:ResponsiveSplitter id="rsMain" defaultPane="default">
                 <uiL:PaneContainer id="pcMain" orientation="Vertical">
@@ -351,10 +361,16 @@
                             enableColumnFreeze="true"
                             enableCellFilter="true"
                             selectionMode="MultiToggle"
+                            firstVisibleRowChanged="onFirstVisibleRowChanged"
                             cellClick="onCellClickMatType"
                             sort="onSorted"
-                            rowSelectionChange="onRowSelectionChangeMatType"
-                            filter="onFilter">
+                            filter="onFilter"
+                            columnFreeze="onColumnUpdated"
+                            columnMove="onColumnUpdated"
+                            columnResize="onColumnUpdated"
+                            columnSelect="onColumnUpdated"
+                            columnVisibility="onColumnUpdated"
+                            rowSelectionChange="onRowSelectionChangeMatType">
                             <uiT:rowSettingsTemplate>
                                 <uiT:RowSettings highlight="{= ${matType>Edited} === true ? 'Warning' : null}" />
                             </uiT:rowSettingsTemplate>
@@ -480,10 +496,16 @@
                                                 enableColumnFreeze="true"
                                                 enableCellFilter="true"
                                                 selectionMode="Single"
-                                                selectionBehavior="RowOnly"
+                                                selectionBehavior="RowSelector"
+                                                firstVisibleRowChanged="onFirstVisibleRowChanged"
                                                 cellClick="onCellClickMatClass"
                                                 sort="onSorted"
-                                                filter="onFilter">
+                                                filter="onFilter"
+                                                columnFreeze="onColumnUpdated"
+                                                columnMove="onColumnUpdated"
+                                                columnResize="onColumnUpdated"
+                                                columnSelect="onColumnUpdated"
+                                                columnVisibility="onColumnUpdated">
                                                 <uiT:rowSettingsTemplate>
                                                     <uiT:RowSettings highlight="{= ${matClass>Edited} === true ? 'Warning' : null}" />
                                                 </uiT:rowSettingsTemplate>
@@ -572,10 +594,16 @@
                                                 enableColumnFreeze="true"
                                                 enableCellFilter="true"
                                                 selectionMode="Single"
-                                                selectionBehavior="RowOnly"
+                                                selectionBehavior="RowSelector"
+                                                firstVisibleRowChanged="onFirstVisibleRowChanged"
                                                 cellClick="onCellClickMatAttrib"
                                                 sort="onSorted"
-                                                filter="onFilter">
+                                                filter="onFilter"
+                                                columnFreeze="onColumnUpdated"
+                                                columnMove="onColumnUpdated"
+                                                columnResize="onColumnUpdated"
+                                                columnSelect="onColumnUpdated"
+                                                columnVisibility="onColumnUpdated">
                                                 <uiT:rowSettingsTemplate>
                                                     <uiT:RowSettings highlight="{= ${matAttrib>Edited} === true ? 'Warning' : null}" />
                                                 </uiT:rowSettingsTemplate>
@@ -667,10 +695,16 @@
                                     enableColumnFreeze="true"
                                     enableCellFilter="true"
                                     selectionMode="Single"
-                                    selectionBehavior="RowOnly"
+                                    selectionBehavior="RowSelector"
+                                    firstVisibleRowChanged="onFirstVisibleRowChanged"
                                     cellClick="onCellClickBatchControl"
                                     sort="onSorted"
-                                    filter="onFilter">
+                                    filter="onFilter"
+                                    columnFreeze="onColumnUpdated"
+                                    columnMove="onColumnUpdated"
+                                    columnResize="onColumnUpdated"
+                                    columnSelect="onColumnUpdated"
+                                    columnVisibility="onColumnUpdated">
                                     <uiT:rowSettingsTemplate>
                                         <uiT:RowSettings highlight="{= ${batchControl>Edited} === true ? 'Warning' : null}" />
                                     </uiT:rowSettingsTemplate>
@@ -759,5 +793,8 @@
                 <!-- </uiL:flexContent>
             </uiL:FixFlex> -->
             </VBox>
+
+        </content>
+    </Page>
 
 </mvc:View>
