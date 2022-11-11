@@ -903,13 +903,16 @@ sap.ui.define([
             },
 
             setRowCreateMode(arg) {
+                var oTable = this.byId(arg + "Tab");
+                oTable.clearSelection();
+                this.setControlEditMode(arg, true);
+
                 var aNewRows = this.getView().getModel(arg).getData().results.filter(item => item.NEW === true);
                 if (aNewRows.length == 0) {
                     this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel(arg).getData());
                 }
 
                 var oNewRow = {};
-                var oTable = this.byId(arg + "Tab");                
                 oTable.getColumns().forEach((col, idx) => {
                     this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
                         .forEach(ci => {
@@ -1171,6 +1174,7 @@ sap.ui.define([
             setRowEditMode(arg) {
                 var oTable = this.byId(arg + "Tab");
                 oTable.clearSelection();
+                this.setControlEditMode(arg, true);
                 
                 this.getView().getModel(arg).getData().results.forEach((item, index) => {
                     item.Edited = false;
@@ -1274,119 +1278,162 @@ sap.ui.define([
             },
 
             onCancelMatType() {
-                MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
-                    actions: ["Yes", "No"],
-                    onClose: function (sAction) {
-                        if (sAction == "Yes") {
-                            _this.byId("btnAddMatType").setVisible(true);
-                            _this.byId("btnEditMatType").setVisible(true);
-                            _this.byId("btnAddRowMatType").setVisible(false);
-                            _this.byId("btnRemoveRowMatType").setVisible(false);
-                            _this.byId("btnSaveMatType").setVisible(false);
-                            _this.byId("btnCancelMatType").setVisible(false);
-                            _this.byId("btnDeleteMatType").setVisible(true);
-                            _this.byId("btnRefreshMatType").setVisible(true);
-                            _this.byId("btnSortMatType").setVisible(true);
-                            _this.byId("btnFilterMatType").setVisible(true);
-                            _this.byId("btnFullScreenMatType").setVisible(true);
-                            _this.byId("btnColPropMatType").setVisible(true);
-                            _this.byId("searchFieldMatType").setVisible(true);
-                            _this.byId("btnTabLayoutMatType").setVisible(true);
+                var aNewRows = this.getView().getModel("matType").getData().results.filter(item => item.NEW === true);
+                var aEditedRows = this.getView().getModel("matType").getData().results.filter(item => item.EDITED === true);
 
-                            _this.byId("cmbSbu").setEnabled(true);
-
-                            _this.onTableResize("MatType","Min");
-                            _this.setRowReadMode("matType");
-                            _this.getView().getModel("matType").setProperty("/", _this._oDataBeforeChange);
-                            _this._aInvalidValueState = [];
-                            
+                if (aNewRows.length > 0 || aEditedRows.length > 0) {
+                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                        actions: ["Yes", "No"],
+                        onClose: function (sAction) {
+                            if (sAction == "Yes") {
+                                _this.cancelMatType();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    _this.cancelMatType();
+                }
+            },
+
+            cancelMatType() {
+                _this.byId("btnAddMatType").setVisible(true);
+                _this.byId("btnEditMatType").setVisible(true);
+                _this.byId("btnAddRowMatType").setVisible(false);
+                _this.byId("btnRemoveRowMatType").setVisible(false);
+                _this.byId("btnSaveMatType").setVisible(false);
+                _this.byId("btnCancelMatType").setVisible(false);
+                _this.byId("btnDeleteMatType").setVisible(true);
+                _this.byId("btnRefreshMatType").setVisible(true);
+                _this.byId("btnSortMatType").setVisible(true);
+                _this.byId("btnFilterMatType").setVisible(true);
+                _this.byId("btnFullScreenMatType").setVisible(true);
+                _this.byId("btnColPropMatType").setVisible(true);
+                _this.byId("searchFieldMatType").setVisible(true);
+                _this.byId("btnTabLayoutMatType").setVisible(true);
+
+                _this.byId("cmbSbu").setEnabled(true);
+
+                _this.onTableResize("MatType","Min");
+                _this.setRowReadMode("matType");
+                _this.getView().getModel("matType").setProperty("/", _this._oDataBeforeChange);
+                _this._aInvalidValueState = [];
             },
 
             onCancelMatClass() {
-                MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
-                    actions: ["Yes", "No"],
-                    onClose: function (sAction) {
-                        if (sAction == "Yes") {
-                            _this.byId("btnAddMatClass").setVisible(true);
-                            _this.byId("btnEditMatClass").setVisible(true);
-                            _this.byId("btnAddRowMatClass").setVisible(false);
-                            _this.byId("btnRemoveRowMatClass").setVisible(false);
-                            _this.byId("btnSaveMatClass").setVisible(false);
-                            _this.byId("btnCancelMatClass").setVisible(false);
-                            _this.byId("btnDeleteMatClass").setVisible(true);
-                            _this.byId("btnRefreshMatClass").setVisible(true);
-                            _this.byId("btnSortMatClass").setVisible(true);
-                            _this.byId("btnFilterMatClass").setVisible(true);
-                            _this.byId("btnFullScreenMatClass").setVisible(true);
-                            _this.byId("btnColPropMatClass").setVisible(true);
-                            _this.byId("searchFieldMatClass").setVisible(true);
-                            _this.byId("btnTabLayoutMatClass").setVisible(true);
-                            _this.onTableResize("MatClass","Min");
-                            _this.setRowReadMode("matClass");
-                            _this.getView().getModel("matClass").setProperty("/", _this._oDataBeforeChange);
-                            _this._aInvalidValueState = [];
+                var aNewRows = this.getView().getModel("matClass").getData().results.filter(item => item.NEW === true);
+                var aEditedRows = this.getView().getModel("matClass").getData().results.filter(item => item.EDITED === true);
+
+                if (aNewRows.length > 0 || aEditedRows.length > 0) {
+                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                        actions: ["Yes", "No"],
+                        onClose: function (sAction) {
+                            if (sAction == "Yes") {
+                                _this.cancelMatClass();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    _this.cancelMatClass();
+                }
+            },
+
+            cancelMatClass() {
+                _this.byId("btnAddMatClass").setVisible(true);
+                _this.byId("btnEditMatClass").setVisible(true);
+                _this.byId("btnAddRowMatClass").setVisible(false);
+                _this.byId("btnRemoveRowMatClass").setVisible(false);
+                _this.byId("btnSaveMatClass").setVisible(false);
+                _this.byId("btnCancelMatClass").setVisible(false);
+                _this.byId("btnDeleteMatClass").setVisible(true);
+                _this.byId("btnRefreshMatClass").setVisible(true);
+                _this.byId("btnSortMatClass").setVisible(true);
+                _this.byId("btnFilterMatClass").setVisible(true);
+                _this.byId("btnFullScreenMatClass").setVisible(true);
+                _this.byId("btnColPropMatClass").setVisible(true);
+                _this.byId("searchFieldMatClass").setVisible(true);
+                _this.byId("btnTabLayoutMatClass").setVisible(true);
+                _this.onTableResize("MatClass","Min");
+                _this.setRowReadMode("matClass");
+                _this.getView().getModel("matClass").setProperty("/", _this._oDataBeforeChange);
+                _this._aInvalidValueState = [];
             },
 
             onCancelMatAttrib() {
-                MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
-                    actions: ["Yes", "No"],
-                    onClose: function (sAction) {
-                        if (sAction == "Yes") {
-                            _this.byId("btnAddMatAttrib").setVisible(true);
-                            _this.byId("btnEditMatAttrib").setVisible(true);
-                            _this.byId("btnAddRowMatAttrib").setVisible(false);
-                            _this.byId("btnRemoveRowMatAttrib").setVisible(false);
-                            _this.byId("btnSaveMatAttrib").setVisible(false);
-                            _this.byId("btnCancelMatAttrib").setVisible(false);
-                            _this.byId("btnDeleteMatAttrib").setVisible(true);
-                            _this.byId("btnRefreshMatAttrib").setVisible(true);
-                            _this.byId("btnSortMatAttrib").setVisible(true);
-                            _this.byId("btnFilterMatAttrib").setVisible(true);
-                            _this.byId("btnFullScreenMatAttrib").setVisible(true);
-                            _this.byId("btnColPropMatAttrib").setVisible(true);
-                            _this.byId("searchFieldMatAttrib").setVisible(true);
-                            _this.byId("btnTabLayoutMatAttrib").setVisible(true);
-                            _this.onTableResize("MatAttrib","Min");
-                            _this.setRowReadMode("matAttrib");
-                            _this.getView().getModel("matAttrib").setProperty("/", _this._oDataBeforeChange);
-                            _this._aInvalidValueState = [];
+                var aNewRows = this.getView().getModel("matAttrib").getData().results.filter(item => item.NEW === true);
+                var aEditedRows = this.getView().getModel("matAttrib").getData().results.filter(item => item.EDITED === true);
+
+                if (aNewRows.length > 0 || aEditedRows.length > 0) {
+                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                        actions: ["Yes", "No"],
+                        onClose: function (sAction) {
+                            if (sAction == "Yes") {
+                                _this.cancelMatAttrib();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    _this.cancelMatAttrib();
+                }
+            },
+
+            cancelMatAttrib() {
+                _this.byId("btnAddMatAttrib").setVisible(true);
+                _this.byId("btnEditMatAttrib").setVisible(true);
+                _this.byId("btnAddRowMatAttrib").setVisible(false);
+                _this.byId("btnRemoveRowMatAttrib").setVisible(false);
+                _this.byId("btnSaveMatAttrib").setVisible(false);
+                _this.byId("btnCancelMatAttrib").setVisible(false);
+                _this.byId("btnDeleteMatAttrib").setVisible(true);
+                _this.byId("btnRefreshMatAttrib").setVisible(true);
+                _this.byId("btnSortMatAttrib").setVisible(true);
+                _this.byId("btnFilterMatAttrib").setVisible(true);
+                _this.byId("btnFullScreenMatAttrib").setVisible(true);
+                _this.byId("btnColPropMatAttrib").setVisible(true);
+                _this.byId("searchFieldMatAttrib").setVisible(true);
+                _this.byId("btnTabLayoutMatAttrib").setVisible(true);
+                _this.onTableResize("MatAttrib","Min");
+                _this.setRowReadMode("matAttrib");
+                _this.getView().getModel("matAttrib").setProperty("/", _this._oDataBeforeChange);
+                _this._aInvalidValueState = [];
             },
 
             onCancelBatchControl() {
-                MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
-                    actions: ["Yes", "No"],
-                    onClose: function (sAction) {
-                        if (sAction == "Yes") {
-                            _this.byId("btnAddBatchControl").setVisible(true);
-                            _this.byId("btnEditBatchControl").setVisible(true);
-                            _this.byId("btnAddRowBatchControl").setVisible(false);
-                            _this.byId("btnRemoveRowBatchControl").setVisible(false);
-                            _this.byId("btnSaveBatchControl").setVisible(false);
-                            _this.byId("btnCancelBatchControl").setVisible(false);
-                            _this.byId("btnDeleteBatchControl").setVisible(true);
-                            _this.byId("btnRefreshBatchControl").setVisible(true);
-                            _this.byId("btnSortBatchControl").setVisible(true);
-                            _this.byId("btnFilterBatchControl").setVisible(true);
-                            _this.byId("btnFullScreenBatchControl").setVisible(true);
-                            _this.byId("btnColPropBatchControl").setVisible(true);
-                            _this.byId("searchFieldBatchControl").setVisible(true);
-                            _this.byId("btnTabLayoutBatchControl").setVisible(true);
-                            _this.onTableResize("BatchControl","Min");
-                            _this.setRowReadMode("batchControl");
-                            _this.getView().getModel("batchControl").setProperty("/", _this._oDataBeforeChange);
-                            _this._aInvalidValueState = [];
+                var aNewRows = this.getView().getModel("batchControl").getData().results.filter(item => item.NEW === true);
+                var aEditedRows = this.getView().getModel("batchControl").getData().results.filter(item => item.EDITED === true);
+
+                if (aNewRows.length > 0 || aEditedRows.length > 0) {
+                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                        actions: ["Yes", "No"],
+                        onClose: function (sAction) {
+                            if (sAction == "Yes") {
+                                _this.cancelBatchControl();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    _this.cancelBatchControl();
+                }
+            },
+
+            cancelBatchControl() {
+                _this.byId("btnAddBatchControl").setVisible(true);
+                _this.byId("btnEditBatchControl").setVisible(true);
+                _this.byId("btnAddRowBatchControl").setVisible(false);
+                _this.byId("btnRemoveRowBatchControl").setVisible(false);
+                _this.byId("btnSaveBatchControl").setVisible(false);
+                _this.byId("btnCancelBatchControl").setVisible(false);
+                _this.byId("btnDeleteBatchControl").setVisible(true);
+                _this.byId("btnRefreshBatchControl").setVisible(true);
+                _this.byId("btnSortBatchControl").setVisible(true);
+                _this.byId("btnFilterBatchControl").setVisible(true);
+                _this.byId("btnFullScreenBatchControl").setVisible(true);
+                _this.byId("btnColPropBatchControl").setVisible(true);
+                _this.byId("searchFieldBatchControl").setVisible(true);
+                _this.byId("btnTabLayoutBatchControl").setVisible(true);
+                _this.onTableResize("BatchControl","Min");
+                _this.setRowReadMode("batchControl");
+                _this.getView().getModel("batchControl").setProperty("/", _this._oDataBeforeChange);
+                _this._aInvalidValueState = [];
             },
 
             onAddRow(pModel) {
@@ -2549,6 +2596,7 @@ sap.ui.define([
                 //         {model: "matAttrib", sortProperty: "ATTRIBCD", sorted: true, sortOrder: "Ascending"}
                 //     );
                 // }
+                this.setControlEditMode(arg, false);
 
                 var oTable = this.byId(arg + "Tab");
                 oTable.getColumns().forEach((col, idx) => {                    
@@ -2705,6 +2753,36 @@ sap.ui.define([
                 // for (var i = 0; i < indices.length; i++) {
                 //     var idx = indices[i];
                 // }
+            },
+
+            setControlEditMode(pType, pEditable) {
+                if (sap.ushell.Container) sap.ushell.Container.setDirtyFlag(pEditable);
+
+                if (pType == "matClass" || pType == "matAttrib") {
+                    var oIconTabBar = this.byId("itbDetail");
+                    if (pEditable) {
+                        oIconTabBar.getItems().filter(item => item.getProperty("key") !== oIconTabBar.getSelectedKey())
+                            .forEach(item => item.setProperty("enabled", false));
+                    } else {
+                        oIconTabBar.getItems().forEach(item => item.setProperty("enabled", true));
+                    }
+
+                    var oIconTabBar = this.byId("itbMatClass");
+                    if (pEditable) {
+                        oIconTabBar.getItems().filter(item => item.getProperty("key") !== oIconTabBar.getSelectedKey())
+                            .forEach(item => item.setProperty("enabled", false));
+                    } else {
+                        oIconTabBar.getItems().forEach(item => item.setProperty("enabled", true));
+                    }
+                } else if (pType == "batchControl") {
+                    var oIconTabBar = this.byId("itbDetail");
+                    if (pEditable) {
+                        oIconTabBar.getItems().filter(item => item.getProperty("key") !== oIconTabBar.getSelectedKey())
+                            .forEach(item => item.setProperty("enabled", false));
+                    } else {
+                        oIconTabBar.getItems().forEach(item => item.setProperty("enabled", true));
+                    }
+                }
             },
 
             showLoadingDialog(arg) {
