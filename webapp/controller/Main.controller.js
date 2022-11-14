@@ -1603,6 +1603,9 @@ sap.ui.define([
                                     var oError = JSON.parse(err.responseText);
                                     var sError = oError.error.message.value;
 
+                                    sError = sError.replace("Property", "Column");
+                                    sError = sError.replace("at offset '20'", "");
+
                                     MessageBox.error(sError,
                                     {
                                         styleClass: bCompact ? "sapUiSizeCompact" : ""
@@ -1671,6 +1674,9 @@ sap.ui.define([
                                     var oError = JSON.parse(err.responseText);
                                     var sError = oError.error.message.value;
 
+                                    sError = sError.replace("Property", "Column");
+                                    sError = sError.replace("at offset '20'", "");
+                                    
                                     MessageBox.error(sError,
                                     {
                                         styleClass: bCompact ? "sapUiSizeCompact" : ""
