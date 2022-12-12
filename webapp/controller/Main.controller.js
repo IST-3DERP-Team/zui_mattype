@@ -2200,7 +2200,12 @@ sap.ui.define([
 
             onCellClickMatType: function(oEvent) {
                 var vMatType = oEvent.getParameters().rowBindingContext.getObject().MATTYP;
-                this.getView().getModel("ui").setProperty("/activeMatType", vMatType);
+                this.onCellClick(oEvent);
+                _this.onSelectMatType(vMatType);
+            },
+
+            onSelectMatType(pMatType) {
+                this.getView().getModel("ui").setProperty("/activeMatType", pMatType);
 
                 var oIconTabBarDetail = this.byId("itbDetail");
                 if (oIconTabBarDetail.getSelectedKey() == "matClass") {
@@ -2208,11 +2213,14 @@ sap.ui.define([
                     oIconTabBarMatClass.setSelectedKey("matClass");
                 }
 
-                this.onCellClick(oEvent);
-
-                this.getMatClass();
-                this.getBatchControl();
-
+                if (pMatType.length > 0) {
+                    this.getMatClass();
+                    this.getBatchControl();
+                } else {
+                    this.getView().getModel("matClass").setProperty("/results", []);
+                    this.getView().getModel("batchControl").setProperty("/results", []);
+                }
+                
                 // Clear Sort and Filter
                 this.clearSortFilter("matClassTab");
                 this.clearSortFilter("matAttribTab");
@@ -2301,6 +2309,15 @@ sap.ui.define([
                 }
     
                 this.byId(sTable + "Tab").getBinding("rows").filter(oFilter, "Application");
+
+                if (sTable == "matType") {
+                    var aIndices = this.byId(sTable + "Tab").getBinding("rows").aIndices;
+                    if (aIndices.length > 0) {
+                        var oRow = _this.getView().getModel(sTable).getData().results[aIndices[0]];
+                        _this.onSelectMatType(oRow.MATTYP);
+                    }
+
+                }
                 console.log("filterGlobally", this.byId(sTable + "Tab").getBinding("rows"))
             },
 
