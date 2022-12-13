@@ -18,6 +18,7 @@ sap.ui.define([
         var _this;
         var _startUpInfo;
         var _oCaption = {};
+        var _aFilterTbl = {};
 
         // shortcut for sap.ui.table.SortOrder
         var SortOrder = library.SortOrder;
@@ -52,6 +53,13 @@ sap.ui.define([
                 this._aEntitySet = {
                     matType: "MaterialTypeSet", matClass: "MaterialClsSet", matAttrib: "MaterialAttribSet", batchControl: "BatchControlSet"
                 };
+
+                _aFilterTbl = {
+                    matType: [],
+                    matClass: [],
+                    matAttrib: [],
+                    batchControl: []
+                }
 
                 this._aColumns = {};
                 this._aSortableColumns = {};
@@ -1016,11 +1024,19 @@ sap.ui.define([
                     oNewRow["ATTRIBCD"] = iMaxAttrib.toString().padStart(7, "0");
                 }
 
+                // Get column filters before create
+                if (_this.getView().byId(arg + "Tab").getBinding("rows")) {
+                    _aFilterTbl[arg] = _this.getView().byId(arg + "Tab").getBinding("rows").aFilters;
+                }
+
                 aNewRows.push(oNewRow);
                 this.getView().getModel(arg).setProperty("/results", aNewRows);
                 
                 // Remove filter
+                // Search filter
                 this.byId(arg + "Tab").getBinding("rows").filter(null, "Application");
+                // Column filter
+                this.clearSortFilter(arg + "Tab");
             },
 
             onEditMatType(oEvent) {
@@ -2650,9 +2666,20 @@ sap.ui.define([
                 })
 
                 // Reapply filter
+                // Search filter
                 var aFilters = [];
                 if (_this.getView().byId(arg + "Tab").getBinding("rows")) {
                     aFilters = _this.getView().byId(arg + "Tab").getBinding("rows").aFilters;
+                }
+                // Column filter
+                if (_aFilterTbl[arg].length > 0) {
+                    _aFilterTbl[arg].forEach(item => {
+                        var iColIdx = _this._aColumns[arg].findIndex(x => x.name == item.sPath);
+                        _this.getView().byId(arg + "Tab").filter(_this.getView().byId(arg + "Tab").getColumns()[iColIdx], 
+                            item.oValue1);
+                    });
+
+                    _aFilterTbl[arg] = [];
                 }
 
                 var sFilterGlobal = _this.getView().byId("searchField" + arg[0].toUpperCase() + arg.slice(1)).getProperty("value");
