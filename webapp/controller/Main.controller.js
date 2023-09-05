@@ -1,97 +1,150 @@
 sap.ui.define([
-    "sap/ui/core/mvc/Controller",
+    "./BaseController",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
     'sap/ui/model/Sorter',
     "sap/ui/Device",
-    "sap/ui/table/library",
-    "sap/m/TablePersoController"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, JSONModel, MessageBox, Filter, FilterOperator, Sorter, Device, library, TablePersoController) {
+    function (BaseController, JSONModel, MessageBox, Filter, FilterOperator, Sorter, Device, library, TablePersoController) {
         "use strict";
 
         var _this;
-        var _startUpInfo;
         var _oCaption = {};
-        var _aFilterTbl = {};
+        var _aSmartFilter;
+        var _sSmartFilterGlobal;
+        var _aTableProp = [];
 
-        // shortcut for sap.ui.table.SortOrder
-        var SortOrder = library.SortOrder;
-        var dateFormat = sap.ui.core.format.DateFormat.getDateInstance({pattern : "MM/dd/yyyy" });
+        return BaseController.extend("zuimattype3.controller.Main", {
 
-        return Controller.extend("zuimattype3.controller.Main", {
-            
             onInit: function () {
                 _this = this;
-                this.showLoadingDialog("Loading...");
 
-                var oModelStartUp= new sap.ui.model.json.JSONModel();
-                oModelStartUp.loadData("/sap/bc/ui2/start_up").then(() => {
-                    _startUpInfo = oModelStartUp.oData
-                    // console.log(oModelStartUp.oData.id);
-                    // console.log(oModelStartUp.oData);
+                _this.getCaption();
+
+                _this.initializeComponent();
+
+                // this.showLoadingDialog("Loading...");
+
+                // this.enableDisableButton("matType", "disable");
+                // this.enableDisableButton("matClass", "disable");
+                // this.enableDisableButton("matAttrib", "disable");
+                // this.enableDisableButton("batchControl", "disable");
+
+                // this.getCaption();
+                // this.getSbuPlant();
+
+                // this._oGlobalMatTypeFilter = null;
+                // this._oSortDialog = null;
+                // this._oFilterDialog = null;
+                // this._oViewSettingsDialog = {};
+
+                // this._aEntitySet = {
+                //     matType: "MaterialTypeSet", matClass: "MaterialClsSet", matAttrib: "MaterialAttribSet", batchControl: "BatchControlSet"
+                // };
+
+                // _aFilterTbl = {
+                //     matType: [],
+                //     matClass: [],
+                //     matAttrib: [],
+                //     batchControl: []
+                // }
+
+                // this._aColumns = {};
+                // this._aSortableColumns = {};
+                // this._aFilterableColumns = {};
+
+                // this.getColumns();
+                
+                // this._oDataBeforeChange = {};
+                // this._aInvalidValueState = [];
+
+                // this._tableRendered = "";
+                // var oTableEventDelegate = {
+                //     onkeyup: function(oEvent){
+                //         _this.onKeyUp(oEvent);
+                //     },
+
+                //     onAfterRendering: function(oEvent) {
+                //         _this.onAfterTableRendering(oEvent);
+                //     }
+                // };
+
+                // this.byId("matTypeTab").addEventDelegate(oTableEventDelegate);
+                // this.byId("matClassTab").addEventDelegate(oTableEventDelegate);
+                // this.byId("matAttribTab").addEventDelegate(oTableEventDelegate);
+                // this.byId("batchControlTab").addEventDelegate(oTableEventDelegate);
+            },
+
+            initializeComponent() {
+                this.getView().setModel(new JSONModel({
+                    sbu: "VER" // temporary Sbu
+                }), "ui");
+
+                this.onInitBase(_this, _this.getView().getModel("ui").getData().sbu);
+                this.getAppAction();
+
+                _this.showLoadingDialog("Loading...");
+
+                _aTableProp.push({
+                    modCode: "MATTYPEMOD",
+                    tblSrc: "ZDV_MATTYPE",
+                    tblId: "matTypeTab",
+                    tblModel: "matType"
                 });
 
-                this.enableDisableButton("matType", "disable");
-                this.enableDisableButton("matClass", "disable");
-                this.enableDisableButton("matAttrib", "disable");
-                this.enableDisableButton("batchControl", "disable");
+                _aTableProp.push({
+                    modCode: "MATCLASSMOD",
+                    tblSrc: "ZERP_MATTYPCLS",
+                    tblId: "matClassTab",
+                    tblModel: "matClass"
+                });
 
-                this.getCaption();
-                this.getSbuPlant();
+                _aTableProp.push({
+                    modCode: "MATATTRIBMOD",
+                    tblSrc: "ZERP_MATTYPATRB",
+                    tblId: "matAttribTab",
+                    tblModel: "matAttrib"
+                });
 
-                this._oGlobalMatTypeFilter = null;
-                this._oSortDialog = null;
-                this._oFilterDialog = null;
-                this._oViewSettingsDialog = {};
+                _aTableProp.push({
+                    modCode: "MATTYPEMOD",
+                    tblSrc: "ZDV_MATTYPE",
+                    tblId: "matTypeTab",
+                    tblModel: "matType"
+                });
 
-                this._aEntitySet = {
-                    matType: "MaterialTypeSet", matClass: "MaterialClsSet", matAttrib: "MaterialAttribSet", batchControl: "BatchControlSet"
-                };
 
-                _aFilterTbl = {
-                    matType: [],
-                    matClass: [],
-                    matAttrib: [],
-                    batchControl: []
-                }
+                setTimeout(() => {
+                    //             this.getDynamicColumns(oColumns, "MATCLASSMOD", "ZERP_MATTYPCLS");
+                    //         }, 100);
+        
+                    //         setTimeout(() => {
+                    //             this.getDynamicColumns(oColumns, "MATATTRIBMOD", "ZERP_MATTYPATRB");
+                    //         }, 100);
+        
+                    //         setTimeout(() => {
+                    //             this.getDynamicColumns(oColumns, "BATCHCTRLMOD", "ZERP_MTBC");
+                    //         }, 100);
 
-                this._aColumns = {};
-                this._aSortableColumns = {};
-                this._aFilterableColumns = {};
+                _this.getColumns(_aTableProp);
 
-                this.getColumns();
-                
-                this._oDataBeforeChange = {};
-                this._aInvalidValueState = [];
+                _this.closeLoadingDialog();
+            },
 
-                this._tableRendered = "";
-                var oTableEventDelegate = {
-                    onkeyup: function(oEvent){
-                        _this.onKeyUp(oEvent);
-                    },
-
-                    onAfterRendering: function(oEvent) {
-                        _this.onAfterTableRendering(oEvent);
-                    }
-                };
-
-                this.byId("matTypeTab").addEventDelegate(oTableEventDelegate);
-                this.byId("matClassTab").addEventDelegate(oTableEventDelegate);
-                this.byId("matAttribTab").addEventDelegate(oTableEventDelegate);
-                this.byId("batchControlTab").addEventDelegate(oTableEventDelegate);
+            onAfterTableRender(pTableId, pTableProps) {
+                //console.log("onAfterTableRendering", pTableId)
             },
 
             onAfterTableRendering: function(oEvent) {
-                if (this._tableRendered !== "") {
-                    this.setActiveRowHighlight(this._tableRendered.replace("Tab", ""));
-                    this._tableRendered = "";
-                }
+                // if (this._tableRendered !== "") {
+                //     this.setActiveRowHighlight(this._tableRendered.replace("Tab", ""));
+                //     this._tableRendered = "";
+                // }
             },
 
             getSbuPlant() {
@@ -460,245 +513,245 @@ sap.ui.define([
                 })
             },
 
-            getColumns: async function() {
-                var oModelColumns = new JSONModel();
-                var sPath = jQuery.sap.getModulePath("zuimattype3", "/model/columns.json")
-                await oModelColumns.loadData(sPath);
+            // getColumns: async function() {
+            //     var oModelColumns = new JSONModel();
+            //     var sPath = jQuery.sap.getModulePath("zuimattype3", "/model/columns.json")
+            //     await oModelColumns.loadData(sPath);
 
-                var oColumns = oModelColumns.getData();
-                var oModel = this.getOwnerComponent().getModel();
+            //     var oColumns = oModelColumns.getData();
+            //     var oModel = this.getOwnerComponent().getModel();
 
-                oModel.metadataLoaded().then(() => {
-                    this.getDynamicColumns(oColumns, "MATTYPEMOD", "ZDV_MATTYPE");
+            //     oModel.metadataLoaded().then(() => {
+            //         this.getDynamicColumns(oColumns, "MATTYPEMOD", "ZDV_MATTYPE");
                     
-                    setTimeout(() => {
-                        this.getDynamicColumns(oColumns, "MATCLASSMOD", "ZERP_MATTYPCLS");
-                    }, 100);
+            //         setTimeout(() => {
+            //             this.getDynamicColumns(oColumns, "MATCLASSMOD", "ZERP_MATTYPCLS");
+            //         }, 100);
 
-                    setTimeout(() => {
-                        this.getDynamicColumns(oColumns, "MATATTRIBMOD", "ZERP_MATTYPATRB");
-                    }, 100);
+            //         setTimeout(() => {
+            //             this.getDynamicColumns(oColumns, "MATATTRIBMOD", "ZERP_MATTYPATRB");
+            //         }, 100);
 
-                    setTimeout(() => {
-                        this.getDynamicColumns(oColumns, "BATCHCTRLMOD", "ZERP_MTBC");
-                    }, 100);
-                })
-            },
+            //         setTimeout(() => {
+            //             this.getDynamicColumns(oColumns, "BATCHCTRLMOD", "ZERP_MTBC");
+            //         }, 100);
+            //     })
+            // },
 
-            getDynamicColumns(arg1, arg2, arg3) {
-                var oColumns = arg1;
-                var modCode = arg2;
-                var tabName = arg3;
+            // getDynamicColumns(arg1, arg2, arg3) {
+            //     var oColumns = arg1;
+            //     var modCode = arg2;
+            //     var tabName = arg3;
 
-                //get dynamic columns based on saved layout or ZERP_CHECK
-                var oJSONColumnsModel = new JSONModel();
-                // this.oJSONModel = new JSONModel();
-                var vSBU = "VER"; // this.getView().getModel("ui").getData().activeSbu;
+            //     //get dynamic columns based on saved layout or ZERP_CHECK
+            //     var oJSONColumnsModel = new JSONModel();
+            //     // this.oJSONModel = new JSONModel();
+            //     var vSBU = "VER"; // this.getView().getModel("ui").getData().activeSbu;
 
-                var oModel = this.getOwnerComponent().getModel("ZGW_3DERP_COMMON_SRV");
-                // console.log(oModel)
-                oModel.setHeaders({
-                    sbu: vSBU,
-                    type: modCode,
-                    tabname: tabName
-                });
+            //     var oModel = this.getOwnerComponent().getModel("ZGW_3DERP_COMMON_SRV");
+            //     // console.log(oModel)
+            //     oModel.setHeaders({
+            //         sbu: vSBU,
+            //         type: modCode,
+            //         tabname: tabName
+            //     });
                 
-                oModel.read("/ColumnsSet", {
-                    success: function (oData, oResponse) {
-                        oJSONColumnsModel.setData(oData);
-                        // _this.getView().setModel(oJSONColumnsModel, "columns"); //set the view model
+            //     oModel.read("/ColumnsSet", {
+            //         success: function (oData, oResponse) {
+            //             oJSONColumnsModel.setData(oData);
+            //             // _this.getView().setModel(oJSONColumnsModel, "columns"); //set the view model
 
-                        if (oData.results.length > 0) {
-                            // console.log(modCode)
-                            if (modCode === 'MATTYPEMOD') {
-                                var aColumns = _this.setTableColumns(oColumns["matType"], oData.results);                               
-                                // console.log(aColumns);
-                                _this._aColumns["matType"] = aColumns["columns"];
-                                _this._aSortableColumns["matType"] = aColumns["sortableColumns"];
-                                _this._aFilterableColumns["matType"] = aColumns["filterableColumns"]; 
-                                _this.addColumns(_this.byId("matTypeTab"), aColumns["columns"], "matType");
-                            }
-                            else if (modCode === 'MATCLASSMOD') {
-                                var aColumns = _this.setTableColumns(oColumns["matClass"], oData.results);
-                                // console.log("aColumns", aColumns);
-                                _this._aColumns["matClass"] = aColumns["columns"];
-                                _this._aSortableColumns["matClass"] = aColumns["sortableColumns"];
-                                _this._aFilterableColumns["matClass"] = aColumns["filterableColumns"];
-                                _this.addColumns(_this.byId("matClassTab"), aColumns["columns"], "matClass");
-                            }
-                            else if (modCode === 'MATATTRIBMOD') {
-                                var aColumns = _this.setTableColumns(oColumns["matAttrib"], oData.results);
-                                // console.log("aColumns", aColumns);
-                                _this._aColumns["matAttrib"] = aColumns["columns"];
-                                _this._aSortableColumns["matAttrib"] = aColumns["sortableColumns"];
-                                _this._aFilterableColumns["matAttrib"] = aColumns["filterableColumns"];
-                                _this.addColumns(_this.byId("matAttribTab"), aColumns["columns"], "matAttrib");
-                            }
-                            else if (modCode === 'BATCHCTRLMOD') {
-                                var aColumns = _this.setTableColumns(oColumns["batchControl"], oData.results);
-                                // console.log("aColumns", aColumns);
-                                _this._aColumns["batchControl"] = aColumns["columns"];
-                                _this._aSortableColumns["batchControl"] = aColumns["sortableColumns"];
-                                _this._aFilterableColumns["batchControl"] = aColumns["filterableColumns"];
-                                _this.addColumns(_this.byId("batchControlTab"), aColumns["columns"], "batchControl");
+            //             if (oData.results.length > 0) {
+            //                 // console.log(modCode)
+            //                 if (modCode === 'MATTYPEMOD') {
+            //                     var aColumns = _this.setTableColumns(oColumns["matType"], oData.results);                               
+            //                     // console.log(aColumns);
+            //                     _this._aColumns["matType"] = aColumns["columns"];
+            //                     _this._aSortableColumns["matType"] = aColumns["sortableColumns"];
+            //                     _this._aFilterableColumns["matType"] = aColumns["filterableColumns"]; 
+            //                     _this.addColumns(_this.byId("matTypeTab"), aColumns["columns"], "matType");
+            //                 }
+            //                 else if (modCode === 'MATCLASSMOD') {
+            //                     var aColumns = _this.setTableColumns(oColumns["matClass"], oData.results);
+            //                     // console.log("aColumns", aColumns);
+            //                     _this._aColumns["matClass"] = aColumns["columns"];
+            //                     _this._aSortableColumns["matClass"] = aColumns["sortableColumns"];
+            //                     _this._aFilterableColumns["matClass"] = aColumns["filterableColumns"];
+            //                     _this.addColumns(_this.byId("matClassTab"), aColumns["columns"], "matClass");
+            //                 }
+            //                 else if (modCode === 'MATATTRIBMOD') {
+            //                     var aColumns = _this.setTableColumns(oColumns["matAttrib"], oData.results);
+            //                     // console.log("aColumns", aColumns);
+            //                     _this._aColumns["matAttrib"] = aColumns["columns"];
+            //                     _this._aSortableColumns["matAttrib"] = aColumns["sortableColumns"];
+            //                     _this._aFilterableColumns["matAttrib"] = aColumns["filterableColumns"];
+            //                     _this.addColumns(_this.byId("matAttribTab"), aColumns["columns"], "matAttrib");
+            //                 }
+            //                 else if (modCode === 'BATCHCTRLMOD') {
+            //                     var aColumns = _this.setTableColumns(oColumns["batchControl"], oData.results);
+            //                     // console.log("aColumns", aColumns);
+            //                     _this._aColumns["batchControl"] = aColumns["columns"];
+            //                     _this._aSortableColumns["batchControl"] = aColumns["sortableColumns"];
+            //                     _this._aFilterableColumns["batchControl"] = aColumns["filterableColumns"];
+            //                     _this.addColumns(_this.byId("batchControlTab"), aColumns["columns"], "batchControl");
 
-                                _this.closeLoadingDialog();
-                            }
-                        }
-                    },
-                    error: function (err) {
-                        _this.closeLoadingDialog();
-                    }
-                });
-            },
+            //                     _this.closeLoadingDialog();
+            //                 }
+            //             }
+            //         },
+            //         error: function (err) {
+            //             _this.closeLoadingDialog();
+            //         }
+            //     });
+            // },
 
-            setTableColumns: function(arg1, arg2) {
-                var oColumn = arg1;
-                var oMetadata = arg2;
+            // setTableColumns: function(arg1, arg2) {
+            //     var oColumn = arg1;
+            //     var oMetadata = arg2;
                 
-                var aSortableColumns = [];
-                var aFilterableColumns = [];
-                var aColumns = [];
+            //     var aSortableColumns = [];
+            //     var aFilterableColumns = [];
+            //     var aColumns = [];
 
-                oMetadata.forEach((prop, idx) => {
-                    var vCreatable = prop.Creatable;
-                    var vUpdatable = prop.Editable;
-                    var vSortable = true;
-                    var vSorted = prop.Sorted;
-                    var vSortOrder = prop.SortOrder;
-                    var vFilterable = true;
-                    var vName = prop.ColumnLabel;
-                    var oColumnLocalProp = oColumn.filter(col => col.name.toUpperCase() === prop.ColumnName);
-                    var vShowable = true;
-                    var vOrder = prop.Order;
+            //     oMetadata.forEach((prop, idx) => {
+            //         var vCreatable = prop.Creatable;
+            //         var vUpdatable = prop.Editable;
+            //         var vSortable = true;
+            //         var vSorted = prop.Sorted;
+            //         var vSortOrder = prop.SortOrder;
+            //         var vFilterable = true;
+            //         var vName = prop.ColumnLabel;
+            //         var oColumnLocalProp = oColumn.filter(col => col.name.toUpperCase() === prop.ColumnName);
+            //         var vShowable = true;
+            //         var vOrder = prop.Order;
 
-                    // console.log(prop)
-                    if (vShowable) {
-                        //sortable
-                        if (vSortable) {
-                            aSortableColumns.push({
-                                name: prop.ColumnName, 
-                                label: vName, 
-                                position: +vOrder, 
-                                sorted: vSorted,
-                                sortOrder: vSortOrder
-                            });
-                        }
+            //         // console.log(prop)
+            //         if (vShowable) {
+            //             //sortable
+            //             if (vSortable) {
+            //                 aSortableColumns.push({
+            //                     name: prop.ColumnName, 
+            //                     label: vName, 
+            //                     position: +vOrder, 
+            //                     sorted: vSorted,
+            //                     sortOrder: vSortOrder
+            //                 });
+            //             }
 
-                        //filterable
-                        if (vFilterable) {
-                            aFilterableColumns.push({
-                                name: prop.ColumnName, 
-                                label: vName, 
-                                position: +vOrder,
-                                value: "",
-                                connector: "Contains"
-                            });
-                        }
-                    }
+            //             //filterable
+            //             if (vFilterable) {
+            //                 aFilterableColumns.push({
+            //                     name: prop.ColumnName, 
+            //                     label: vName, 
+            //                     position: +vOrder,
+            //                     value: "",
+            //                     connector: "Contains"
+            //                 });
+            //             }
+            //         }
 
-                    //columns
-                    aColumns.push({
-                        name: prop.ColumnName, 
-                        label: vName, 
-                        position: +vOrder,
-                        type: prop.DataType,
-                        creatable: vCreatable,
-                        updatable: vUpdatable,
-                        sortable: vSortable,
-                        filterable: vFilterable,
-                        visible: prop.Visible,
-                        required: prop.Mandatory,
-                        width: prop.ColumnWidth + 'px',
-                        sortIndicator: vSortOrder === '' ? "None" : vSortOrder,
-                        hideOnChange: false,
-                        valueHelp: oColumnLocalProp.length === 0 ? {"show": false} : oColumnLocalProp[0].valueHelp,
-                        showable: vShowable,
-                        key: prop.Key === '' ? false : true,
-                        maxLength: prop.Length,
-                        precision: prop.Decimal,
-                        scale: prop.Scale !== undefined ? prop.Scale : null
-                    })
-                })
+            //         //columns
+            //         aColumns.push({
+            //             name: prop.ColumnName, 
+            //             label: vName, 
+            //             position: +vOrder,
+            //             type: prop.DataType,
+            //             creatable: vCreatable,
+            //             updatable: vUpdatable,
+            //             sortable: vSortable,
+            //             filterable: vFilterable,
+            //             visible: prop.Visible,
+            //             required: prop.Mandatory,
+            //             width: prop.ColumnWidth + 'px',
+            //             sortIndicator: vSortOrder === '' ? "None" : vSortOrder,
+            //             hideOnChange: false,
+            //             valueHelp: oColumnLocalProp.length === 0 ? {"show": false} : oColumnLocalProp[0].valueHelp,
+            //             showable: vShowable,
+            //             key: prop.Key === '' ? false : true,
+            //             maxLength: prop.Length,
+            //             precision: prop.Decimal,
+            //             scale: prop.Scale !== undefined ? prop.Scale : null
+            //         })
+            //     })
 
-                aSortableColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
-                this.createViewSettingsDialog("sort", 
-                    new JSONModel({
-                        items: aSortableColumns,
-                        rowCount: aSortableColumns.length,
-                        activeRow: 0,
-                        table: ""
-                    })
-                );
+            //     aSortableColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
+            //     this.createViewSettingsDialog("sort", 
+            //         new JSONModel({
+            //             items: aSortableColumns,
+            //             rowCount: aSortableColumns.length,
+            //             activeRow: 0,
+            //             table: ""
+            //         })
+            //     );
 
-                aFilterableColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
-                this.createViewSettingsDialog("filter", 
-                    new JSONModel({
-                        items: aFilterableColumns,
-                        rowCount: aFilterableColumns.length,
-                        table: ""
-                    })
-                );
+            //     aFilterableColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
+            //     this.createViewSettingsDialog("filter", 
+            //         new JSONModel({
+            //             items: aFilterableColumns,
+            //             rowCount: aFilterableColumns.length,
+            //             table: ""
+            //         })
+            //     );
 
-                aColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
-                var aColumnProp = aColumns.filter(item => item.showable === true);
+            //     aColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
+            //     var aColumnProp = aColumns.filter(item => item.showable === true);
 
-                this.createViewSettingsDialog("column", 
-                    new JSONModel({
-                        items: aColumnProp,
-                        rowCount: aColumnProp.length,
-                        table: ""
-                    })
-                );
+            //     this.createViewSettingsDialog("column", 
+            //         new JSONModel({
+            //             items: aColumnProp,
+            //             rowCount: aColumnProp.length,
+            //             table: ""
+            //         })
+            //     );
 
                 
-                return { columns: aColumns, sortableColumns: aSortableColumns, filterableColumns: aFilterableColumns };
-            },
+            //     return { columns: aColumns, sortableColumns: aSortableColumns, filterableColumns: aFilterableColumns };
+            // },
 
-            addColumns(table, columns, model) {
-                var aColumns = columns.filter(item => item.showable === true)
-                aColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
+            // addColumns(table, columns, model) {
+            //     var aColumns = columns.filter(item => item.showable === true)
+            //     aColumns.sort((a,b) => (a.position > b.position ? 1 : -1));
 
-                aColumns.forEach(col => {
-                    // console.log(col)
-                    if (col.type === "STRING" || col.type === "DATETIME") {
-                        table.addColumn(new sap.ui.table.Column({
-                            id: model + "Col" + col.name,
-                            // id: col.name,
-                            width: col.width,
-                            sortProperty: col.name,
-                            filterProperty: col.name,
-                            label: new sap.m.Text({text: col.label}),
-                            template: new sap.m.Text({text: "{" + model + ">" + col.name + "}"}),
-                            visible: col.visible
-                        }));
-                    }
-                    else if (col.type === "NUMBER") {
-                        table.addColumn(new sap.ui.table.Column({
-                            id: model + "Col" + col.name,
-                            width: col.width,
-                            hAlign: "End",
-                            sortProperty: col.name,
-                            filterProperty: col.name,
-                            label: new sap.m.Text({text: col.label}),
-                            template: new sap.m.Text({text: "{" + model + ">" + col.name + "}"}),
-                            visible: col.visible
-                        }));
-                    }
-                    else if (col.type === "BOOLEAN" ) {
-                        table.addColumn(new sap.ui.table.Column({
-                            id: model + "Col" + col.name,
-                            width: col.width,
-                            hAlign: "Center",
-                            sortProperty: col.name,
-                            filterProperty: col.name,                            
-                            label: new sap.m.Text({text: col.label}),
-                            template: new sap.m.CheckBox({selected: "{" + model + ">" + col.name + "}", editable: false}),
-                            visible: col.visible
-                        }));
-                    }
-                })
-            },
+            //     aColumns.forEach(col => {
+            //         // console.log(col)
+            //         if (col.type === "STRING" || col.type === "DATETIME") {
+            //             table.addColumn(new sap.ui.table.Column({
+            //                 id: model + "Col" + col.name,
+            //                 // id: col.name,
+            //                 width: col.width,
+            //                 sortProperty: col.name,
+            //                 filterProperty: col.name,
+            //                 label: new sap.m.Text({text: col.label}),
+            //                 template: new sap.m.Text({text: "{" + model + ">" + col.name + "}"}),
+            //                 visible: col.visible
+            //             }));
+            //         }
+            //         else if (col.type === "NUMBER") {
+            //             table.addColumn(new sap.ui.table.Column({
+            //                 id: model + "Col" + col.name,
+            //                 width: col.width,
+            //                 hAlign: "End",
+            //                 sortProperty: col.name,
+            //                 filterProperty: col.name,
+            //                 label: new sap.m.Text({text: col.label}),
+            //                 template: new sap.m.Text({text: "{" + model + ">" + col.name + "}"}),
+            //                 visible: col.visible
+            //             }));
+            //         }
+            //         else if (col.type === "BOOLEAN" ) {
+            //             table.addColumn(new sap.ui.table.Column({
+            //                 id: model + "Col" + col.name,
+            //                 width: col.width,
+            //                 hAlign: "Center",
+            //                 sortProperty: col.name,
+            //                 filterProperty: col.name,                            
+            //                 label: new sap.m.Text({text: col.label}),
+            //                 template: new sap.m.CheckBox({selected: "{" + model + ">" + col.name + "}", editable: false}),
+            //                 visible: col.visible
+            //             }));
+            //         }
+            //     })
+            // },
 
             getLookUpFilter(arg) {
                 var oModel = this.getOwnerComponent().getModel();
@@ -2628,63 +2681,63 @@ sap.ui.define([
                 }
             },
 
-            setRowReadMode(arg) {
-                // var aSortedColumns = [];
-                // if (arg == "matAttrib") {
-                //     aSortedColumns.push(
-                //         {model: "matAttrib", sortProperty: "ATTRIBCD", sorted: true, sortOrder: "Ascending"}
-                //     );
-                // }
-                this.setControlEditMode(arg, false);
+            // setRowReadMode(arg) {
+            //     // var aSortedColumns = [];
+            //     // if (arg == "matAttrib") {
+            //     //     aSortedColumns.push(
+            //     //         {model: "matAttrib", sortProperty: "ATTRIBCD", sorted: true, sortOrder: "Ascending"}
+            //     //     );
+            //     // }
+            //     this.setControlEditMode(arg, false);
 
-                var oTable = this.byId(arg + "Tab");
-                oTable.getColumns().forEach((col, idx) => {                    
-                    this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
-                        .forEach(ci => {
-                            if (ci.type === "STRING" || ci.type === "NUMBER") {
-                                col.setTemplate(new sap.m.Text({
-                                    text: "{" + arg + ">" + ci.name + "}",
-                                    wrapping: false,
-                                    tooltip: "{" + arg + ">" + ci.name + "}"
-                                }));
-                            }
-                            else if (ci.type === "BOOLEAN") {
-                                col.setTemplate(new sap.m.CheckBox({selected: "{" + arg + ">" + ci.name + "}", editable: false}));
-                            }
+            //     var oTable = this.byId(arg + "Tab");
+            //     oTable.getColumns().forEach((col, idx) => {                    
+            //         this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
+            //             .forEach(ci => {
+            //                 if (ci.type === "STRING" || ci.type === "NUMBER") {
+            //                     col.setTemplate(new sap.m.Text({
+            //                         text: "{" + arg + ">" + ci.name + "}",
+            //                         wrapping: false,
+            //                         tooltip: "{" + arg + ">" + ci.name + "}"
+            //                     }));
+            //                 }
+            //                 else if (ci.type === "BOOLEAN") {
+            //                     col.setTemplate(new sap.m.CheckBox({selected: "{" + arg + ">" + ci.name + "}", editable: false}));
+            //                 }
 
-                            if (ci.required) {
-                                col.getLabel().removeStyleClass("requiredField");
-                            }
-                        })
-                    // // Sorting
-                    // if (aSortedColumns.filter(x => x.model == arg && x.sortProperty == col.name).length > 0) {
-                    //     console.log("setRowReadMode", col)
-                    //     var oSortedColumn = aSortedColumns.filter(x => x.model == arg && x.sortProperty == col.name)[0];
-                    //     col.sorted = oSortedColumn.sorted;
-                    //     col.sortOrder = oSortedColumn.sortOrder;
-                    // }    
-                })
+            //                 if (ci.required) {
+            //                     col.getLabel().removeStyleClass("requiredField");
+            //                 }
+            //             })
+            //         // // Sorting
+            //         // if (aSortedColumns.filter(x => x.model == arg && x.sortProperty == col.name).length > 0) {
+            //         //     console.log("setRowReadMode", col)
+            //         //     var oSortedColumn = aSortedColumns.filter(x => x.model == arg && x.sortProperty == col.name)[0];
+            //         //     col.sorted = oSortedColumn.sorted;
+            //         //     col.sortOrder = oSortedColumn.sortOrder;
+            //         // }    
+            //     })
 
-                // Reapply filter
-                // Search filter
-                var aFilters = [];
-                if (_this.getView().byId(arg + "Tab").getBinding("rows")) {
-                    aFilters = _this.getView().byId(arg + "Tab").getBinding("rows").aFilters;
-                }
-                // Column filter
-                if (_aFilterTbl[arg].length > 0) {
-                    _aFilterTbl[arg].forEach(item => {
-                        var iColIdx = _this._aColumns[arg].findIndex(x => x.name == item.sPath);
-                        _this.getView().byId(arg + "Tab").filter(_this.getView().byId(arg + "Tab").getColumns()[iColIdx], 
-                            item.oValue1);
-                    });
+            //     // Reapply filter
+            //     // Search filter
+            //     var aFilters = [];
+            //     if (_this.getView().byId(arg + "Tab").getBinding("rows")) {
+            //         aFilters = _this.getView().byId(arg + "Tab").getBinding("rows").aFilters;
+            //     }
+            //     // Column filter
+            //     if (_aFilterTbl[arg].length > 0) {
+            //         _aFilterTbl[arg].forEach(item => {
+            //             var iColIdx = _this._aColumns[arg].findIndex(x => x.name == item.sPath);
+            //             _this.getView().byId(arg + "Tab").filter(_this.getView().byId(arg + "Tab").getColumns()[iColIdx], 
+            //                 item.oValue1);
+            //         });
 
-                    _aFilterTbl[arg] = [];
-                }
+            //         _aFilterTbl[arg] = [];
+            //     }
 
-                var sFilterGlobal = _this.getView().byId("searchField" + arg[0].toUpperCase() + arg.slice(1)).getProperty("value");
-                _this.onRefreshFilter(arg, aFilters, sFilterGlobal);
-            },
+            //     var sFilterGlobal = _this.getView().byId("searchField" + arg[0].toUpperCase() + arg.slice(1)).getProperty("value");
+            //     _this.onRefreshFilter(arg, aFilters, sFilterGlobal);
+            // },
 
             setReqColHdrColor(arg) {
                 var oTable = this.byId(arg + "Tab");
