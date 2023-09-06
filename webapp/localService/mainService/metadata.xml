@@ -42,6 +42,7 @@
                     <PropertyRef Name="MATTYP"/>
                 </Key>
                 <Property Name="MATTYP" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Material type" sap:updatable="false" sap:filterable="false"/>
+                <Property Name="SBU" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="SBU" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="MATTYPDESC" Type="Edm.String" Nullable="false" MaxLength="25" sap:unicode="false" sap:label="Mat.Type Descr." sap:filterable="false"/>
                 <Property Name="HASGMC" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="HasGMC?"/>
                 <Property Name="ISBATCH" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="Batch Indicator"/>
@@ -120,63 +121,23 @@
             </EntityType>
             <EntityType Name="UVRsc" sap:content-version="1">
                 <Key>
-                    <PropertyRef Name="MANDT"/>
                     <PropertyRef Name="USGCLS"/>
-                    <PropertyRef Name="UVTYP"/>
                 </Key>
-                <Property Name="MANDT" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Client" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="USGCLS" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Usage Class" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UVTYP" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="UV Type" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UCDESC1" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="UC Description1" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UCDESC2" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="UC Description2" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UVDESC1" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="UV Description1" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UVDESC2" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="UV Description2" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="DELETED" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Created By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Created Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Updated By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Updated Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <EntityType Name="GMCRangeRsc" sap:content-version="1">
                 <Key>
-                    <PropertyRef Name="MANDT"/>
                     <PropertyRef Name="NORANGECD"/>
                 </Key>
-                <Property Name="MANDT" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Client" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="NORANGECD" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="No. Range Code" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="SHORTTEXT" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Code Description" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="NORANGEGRP" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="No. Range Group" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="NORANGEFR" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Range From" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="NORANGETO" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Range To" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CURRENTNO" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Current No." sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="HASKEY" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="KEYNORANGE" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Key No Range Code" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="ISEXTERNAL" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="DELETED" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="Deleted" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Created By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Created Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Updated By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Updated Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <EntityType Name="ProcessRsc" sap:content-version="1">
                 <Key>
-                    <PropertyRef Name="MANDT"/>
                     <PropertyRef Name="PROCESSCD"/>
                 </Key>
-                <Property Name="MANDT" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Client" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="PROCESSCD" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Process Code" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="DESC1" Type="Edm.String" Nullable="false" MaxLength="256" sap:unicode="false" sap:label="Description" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="DESC2" Type="Edm.String" Nullable="false" MaxLength="256" sap:unicode="false" sap:label="Description" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="HASOUTPUT" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="REQIND" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="WORKCTR" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Work Center" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="PROCTYP" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Process Type" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="VASPROC" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="VAS Process" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="DELETED" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="True/False" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Created By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="CREATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Created Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDBY" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Updated By" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <Property Name="UPDATEDDT" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Updated Date" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <EntityType Name="ExcessMatTypeRsc" sap:content-version="1">
                 <Key>
