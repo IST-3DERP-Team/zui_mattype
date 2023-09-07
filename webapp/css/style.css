@@ -14,32 +14,32 @@
     height: 200px;
 }
 
-.sapMTB{
+/* .sapMTB{
     background: white !important;
-}
+} */
 
 .sapMBtn.activeFiltering .sapMBtnInner {
     background: linear-gradient(45deg, blue, transparent) !important;
 }
 
-.sapMBtn.activeFiltering .sapMBtnIcon {
+/* .sapMBtn.activeFiltering .sapMBtnIcon {
     color: #ffffff !important;
-}
+} */
 
-.tabColumnRowsBgColor .sapUiTableTr.sapUiTableRowSel, 
+/* .tabColumnRowsBgColor .sapUiTableTr.sapUiTableRowSel, 
 .tabColumnRowsBgColor .sapUiTableRowSelectionCell.sapUiTableRowSel, 
 .tabColumnRowsBgColor .sapUiTableRowActionCell.sapUiTableRowSel {
     background-color: #ffffff !important;
-}
+} */
 
 .requiredField {
     color: red !important;
 }
 
-.sapMBtn .sapMBtnInner {
+/* .sapMBtn .sapMBtnInner {
     background: lightgrey;
     border: none;
-}
+} */
 
 .activeRow {
     background-color: #e1ebf3 !important;
@@ -113,11 +113,11 @@
     font-size: 0.25rem;
 }
 
-.sapMITH {
+/* .sapMITH {
     box-shadow: inherit;
     border-top: 0.125rem solid #d1e0ee;
     border-bottom: 0.125rem solid #d1e0ee;
-}
+} */
 
 .sapUiFormResGrid>div {
     padding: 0rem 0rem !important;
