@@ -311,9 +311,13 @@ sap.ui.define([
                         else if (ci.DataType === "BOOLEAN") {
                             col.setTemplate(new sap.m.CheckBox({
                                 selected: "{" + pModel + ">" + sColName + "}",
+                                editable: false
                             }));
                         }
                     })
+
+                col.getLabel().removeStyleClass("sapMLabelRequired");
+                col.getLabel().removeStyleClass("requiredField");
             })
 
             if (_this.getView().getModel(pModel) != undefined) {
@@ -321,12 +325,14 @@ sap.ui.define([
             }
             
             TableFilter.applyColFilters(_this);
+            _this.setReqColHdrColor(pModel);
         },
 
         setRowCreateMode(pModel) {
             var oTable = this.byId(pModel + "Tab");
             oTable.clearSelection();
 
+            var oNewRow = {};
             oTable.getColumns().forEach((col, idx) => {
                 var sColName = "";
 
@@ -340,7 +346,6 @@ sap.ui.define([
                     sColName = col.mAggregations.template.mBindingInfos.value.parts[0].path;
                 }
                 
-                var oNewRow = {};
                 _this._aColumns[pModel].filter(item => item.ColumnName === sColName)
                     .forEach(ci => {
                         if (ci.Creatable) {
@@ -401,6 +406,7 @@ sap.ui.define([
                             }
                             else if (ci.DataType === "BOOLEAN") {
                                 col.setTemplate(new sap.m.CheckBox({selected: "{" + pModel + ">" + sColName + "}",  
+                                    select: this.onCheckBoxChange.bind(this),
                                     editable: true
                                 }));
                             }
@@ -433,6 +439,7 @@ sap.ui.define([
 
                         if (ci.Mandatory) {
                             col.getLabel().addStyleClass("sapMLabelRequired");
+                            col.getLabel().addStyleClass("requiredField");
                         }
 
                         if (ci.DataType === "STRING") oNewRow[ci.name] = "";
@@ -443,15 +450,47 @@ sap.ui.define([
 
             oNewRow["NEW"] = true;
 
-            var aNewRows = this.getView().getModel(pModel).getData().results.filter(item => item.NEW === true);
+            var aNewRows = _this.getView().getModel(pModel).getData().results.filter(item => item.NEW === true);
+
+            if (pModel == "matClass") {
+                var iMaxSeq = 0;
+                var iMaxSeq1 = 0;
+                var iMaxSeq2 = 0;
+                
+                if (_this._oDataBeforeChange.results.length > 0) {
+                    iMaxSeq1 = Math.max(..._this._oDataBeforeChange.results.map(item => item.SEQ));
+                }
+                
+                if (aNewRows.length > 0) {
+                    iMaxSeq2 = Math.max(...aNewRows.map(item => item.SEQ));
+                }
+                
+                iMaxSeq = (iMaxSeq1 > iMaxSeq2 ? iMaxSeq1 : iMaxSeq2) + 1;
+                oNewRow["SEQ"] = iMaxSeq.toString();
+            } 
+            else if (pModel == "matAttrib") {
+                var iMaxAttrib = 0;
+                var iMaxAttrib1 = 0;
+                var iMaxAttrib2 = 0;
+                
+                if (_this._oDataBeforeChange.results.length > 0) {
+                    iMaxAttrib1 = Math.max(..._this._oDataBeforeChange.results.map(item => item.ATTRIBCD));
+                }
+                
+                if (aNewRows.length > 0) {
+                    iMaxAttrib2 = Math.max(...aNewRows.map(item => item.ATTRIBCD));
+                }
+                
+                iMaxAttrib = (iMaxAttrib1 > iMaxAttrib2 ? iMaxAttrib1 : iMaxAttrib2) + 1;
+                oNewRow["ATTRIBCD"] = iMaxAttrib.toString().padStart(7, "0");
+            }
+
+
             aNewRows.push(oNewRow);
-            this.getView().getModel(pModel).setProperty("/results", aNewRows);
+            _this.getView().getModel(pModel).setProperty("/results", aNewRows);
             
-            // Remove filter
-            // Search filter
-            this.byId(pModel + "Tab").getBinding("rows").filter(null, "Application");
-            // Column filter
-            this.clearSortFilter(pModel + "Tab");
+            _this.byId(pModel + "Tab").getBinding("rows").filter(null, "Application");
+            _this.clearSortFilter(pModel + "Tab");
         },
 
         setRowEditMode(pModel) {
@@ -473,7 +512,6 @@ sap.ui.define([
                 _this._aColumns[pModel].filter(item => item.ColumnName === sColName)
                     .forEach(ci => {
                         if (ci.Editable) {
-                            console.log()
                             if (ci.ValueHelp["show"]) {
                                 var bValueFormatter = false;
                                 var sSuggestItemText = ci.ValueHelp["SuggestionItems"].text;
@@ -531,7 +569,8 @@ sap.ui.define([
                                 col.setTemplate(oInput);
                             }
                             else if (ci.DataType === "BOOLEAN") {
-                                col.setTemplate(new sap.m.CheckBox({selected: "{" + pModel + ">" + sColName + "}",  
+                                col.setTemplate(new sap.m.CheckBox({selected: "{" + pModel + ">" + sColName + "}", 
+                                    select: this.onCheckBoxChange.bind(this), 
                                     editable: true
                                 }));
                             }
@@ -564,6 +603,7 @@ sap.ui.define([
 
                         if (ci.Mandatory) {
                             col.getLabel().addStyleClass("sapMLabelRequired");
+                            col.getLabel().addStyleClass("requiredField");
                         }
                     })                
             })
@@ -689,6 +729,7 @@ sap.ui.define([
         },
 
         onValueHelpInputChange: function(oEvent) {
+            console.log("onValueHelpInputChange")
             if (this._validationErrors === undefined) this._validationErrors = [];
 
             var oSource = oEvent.getSource();
@@ -716,10 +757,12 @@ sap.ui.define([
             }
 
             sRowPath = oSource.oParent.getBindingContext(sModel).sPath;
-            this.getView().getModel(sModel).setProperty(sRowPath + '/' + oSource.getBindingInfo("value").parts[0].path, oSource.getSelectedKey());
+            _this.getView().getModel(sModel).setProperty(sRowPath + '/' + oSource.getBindingInfo("value").parts[0].path, oSource.getSelectedKey());
+            _this.getView().getModel(sModel).setProperty(sRowPath + '/EDITED', true);
         },
 
         onValueHelpLiveInputChange: function(oEvent) {
+            console.log("onValueHelpLiveInputChange")
             var oSource = oEvent.getSource();
             var isInvalid = !oSource.getSelectedKey() && oSource.getValue().trim();
             oSource.setValueState(isInvalid ? "Error" : "None");
@@ -993,6 +1036,24 @@ sap.ui.define([
                     else row.removeStyleClass("activeRow");
                 })
             }
+        },
+
+        setReqColHdrColor(pModel) {
+            var oTable = this.byId(pModel + "Tab");
+
+            oTable.getColumns().forEach((col, idx) => {
+                if (col.getLabel().getText().includes("*")) {
+                    col.getLabel().setText(col.getLabel().getText().replaceAll("*", ""));
+                }   
+
+                this._aColumns[pModel].filter(item => item.ColumnLabel === col.getLabel().getText())
+                    .forEach(ci => {
+                        if (ci.Mandatory) {
+                            col.getLabel().removeStyleClass("sapMLabelRequired");
+                            col.getLabel().removeStyleClass("requiredField");
+                        }
+                    })
+            })
         },
 
         //******************************************* */

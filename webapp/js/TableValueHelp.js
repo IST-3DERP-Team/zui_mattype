@@ -514,12 +514,12 @@ sap.ui.define([
             var sEntity = "";
             var promiseResult;
 
-            console.log("getResources", pThis._inputField, sFilter)
+            console.log("getResources", pThis._inputField);
 
             if (pThis._inputField == "MATTYP") {
                 var sPath = oSource.getParent().oBindingContexts[sModel].sPath;
                 sEntity = "/MatTypeRscSet";
-                var oDataUI = pThis.getView().getModel("ui").getData().results[0];
+                var oDataUI = pThis.getView().getModel("ui").getData();
                 var sFilter = "SBU eq '" + oDataUI.SBU + "'";
                     
                 promiseResult = new Promise((resolve, reject) => {
@@ -917,7 +917,7 @@ sap.ui.define([
             
             var sModel = this._inputSource.getParent().getParent().mBindingInfos.rows.model;
             sRowPath = this._inputSource.getBindingInfo("value").binding.oContext.sPath;
-            this.getView().getModel(sModel).setProperty(sRowPath + '/Edited', true);
+            this.getView().getModel(sModel).setProperty(sRowPath + '/EDITED', true);
             
             this._inputSource.setValueState("None");
             this._tableValueHelpDialog.close(); 

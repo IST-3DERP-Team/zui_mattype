@@ -41,6 +41,11 @@ sap.ui.define([
                 this.onInitBase(_this, _this.getView().getModel("ui").getData().sbu);
                 this.getAppAction();
 
+                setTimeout(() => {
+                    var bAppChange = _this.getView().getModel("base").getProperty("/appChange");
+                    _this.setControlAppAction(bAppChange);
+                }, 100);
+
                 _this.showLoadingDialog("Loading...");
 
                 _aTableProp.push({
@@ -97,6 +102,13 @@ sap.ui.define([
                 this.byId("matAttribTab").addEventDelegate(oTableEventDelegate);
                 this.byId("batchControlTab").addEventDelegate(oTableEventDelegate);
 
+                this._aEntitySet = {
+                    matType: "MaterialTypeSet", 
+                    matClass: "MaterialClsSet", 
+                    matAttrib: "MaterialAttribSet", 
+                    batchControl: "BatchControlSet"
+                };
+
                 _this.closeLoadingDialog();
             },
 
@@ -130,7 +142,7 @@ sap.ui.define([
 
                 oModel.read('/MaterialTypeViewSet', {
                     success: function (data, response) {
-                        console.log("MaterialTypeViewSet", data)
+                        //console.log("MaterialTypeViewSet", data)
                         if (data.results.length > 0) {
                             
                             data.results.forEach((item, index) => {
@@ -169,7 +181,7 @@ sap.ui.define([
                             _this.setRowReadMode("matType");
 
                             _this.getView().getModel("ui").setProperty("/activeMatType", data.results[0].MATTYP);
-                            _this.getView().getModel("ui").setProperty("/rowCountMatType", data.results.length.toString());
+                            _this.getView().getModel("ui").setProperty("/rowCountMatType", oTable.getBinding("rows").aIndices.length.toString());
 
                             _this.getMatClass();
                             _this.getBatchControl();
@@ -245,6 +257,8 @@ sap.ui.define([
 
                             _this.setActiveRowHighlight("matClass");                            
                         }
+
+                        _this.setRowReadMode("matClass");
                     },
                     error: function (err) { 
                         _this.closeLoadingDialog();
@@ -292,6 +306,8 @@ sap.ui.define([
 
                         _this._tableRendered = "matAttribTab";
                         _this.setActiveRowHighlight("matAttrib");
+
+                        _this.setRowReadMode("matAttrib");
                     },
                     error: function (err) { 
                         _this.closeLoadingDialog();
@@ -341,6 +357,8 @@ sap.ui.define([
 
                         _this._tableRendered = "batchControlTab";
                         _this.setActiveRowHighlight("batchControl");
+
+                        _this.setRowReadMode("batchControl");
                     },
                     error: function (err) { 
                         _this.closeLoadingDialog();
@@ -475,6 +493,7 @@ sap.ui.define([
                 this.byId("btnExitFullScreenMatType").setVisible(false);
                 this.byId("btnTabLayoutMatType").setVisible(false);
 
+                this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel("matType").getData());
                 this.setRowCreateMode("matType");
             },
 
@@ -492,6 +511,7 @@ sap.ui.define([
                 this.byId("btnExitFullScreenMatClass").setVisible(false);
                 this.byId("btnTabLayoutMatClass").setVisible(false);
 
+                this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel("matClass").getData());
                 this.setRowCreateMode("matClass");
             },
 
@@ -517,6 +537,7 @@ sap.ui.define([
                     this.byId("btnExitFullScreenMatAttrib").setVisible(false);
                     this.byId("btnTabLayoutMatAttrib").setVisible(false);
 
+                    this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel("matAttrib").getData());
                     this.setRowCreateMode("matAttrib");
                 } else {
                     MessageBox.warning(_oCaption.INFO_CREATE_DATA_NOT_ALLOW);
@@ -537,136 +558,8 @@ sap.ui.define([
                 this.byId("btnExitFullScreenBatchControl").setVisible(false);
                 this.byId("btnTabLayoutBatchControl").setVisible(false);
 
+                this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel("batchControl").getData());
                 this.setRowCreateMode("batchControl");
-            },
-
-            setRowCreateMode(arg) {
-                var oTable = this.byId(arg + "Tab");
-                oTable.clearSelection();
-                this.setControlEditMode(arg, true);
-
-                var aNewRows = this.getView().getModel(arg).getData().results.filter(item => item.NEW === true);
-                if (aNewRows.length == 0) {
-                    this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel(arg).getData());
-                }
-
-                var oNewRow = {};
-                oTable.getColumns().forEach((col, idx) => {
-                    this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
-                        .forEach(ci => {
-                            if (!ci.hideOnChange && ci.creatable) {
-                                if (ci.type === "BOOLEAN") {
-                                    col.setTemplate(new sap.m.CheckBox({selected: "{" + arg + ">" + ci.name + "}", 
-                                        select: this.onCheckBoxChange.bind(this),    
-                                        editable: true
-                                    }));
-                                }
-                                else if (ci.valueHelp["show"]) {
-                                    col.setTemplate(new sap.m.Input({
-                                        type: "Text",
-                                        value: "{" + arg + ">" + ci.name + "}",
-                                        maxLength: +ci.maxLength,
-                                        showValueHelp: true,
-                                        valueHelpRequest: this.handleValueHelp.bind(this),
-                                        showSuggestion: true,
-                                        maxSuggestionWidth: ci.valueHelp["suggestionItems"].additionalText !== undefined ? ci.valueHelp["suggestionItems"].maxSuggestionWidth : "1px",
-                                        suggestionItems: {
-                                            path: ci.valueHelp["suggestionItems"].path,
-                                            length: 1000,
-                                            template: new sap.ui.core.ListItem({
-                                                key: ci.valueHelp["suggestionItems"].text,
-                                                text: ci.valueHelp["suggestionItems"].text,
-                                                additionalText: ci.valueHelp["suggestionItems"].additionalText !== undefined ? ci.valueHelp["suggestionItems"].additionalText : '',
-                                            }),
-                                            templateShareable: false
-                                        },
-                                        change: this.onValueHelpLiveInputChange.bind(this)
-                                    }));
-                                }
-                                else if (ci.type === "NUMBER") {
-                                    col.setTemplate(new sap.m.Input({
-                                        type: sap.m.InputType.Number,
-                                        textAlign: sap.ui.core.TextAlign.Right,
-                                        value: "{path:'" + arg + ">" + ci.name + "', type:'sap.ui.model.odata.type.Decimal', formatOptions:{ minFractionDigits:" + ci.scale + ", maxFractionDigits:" + ci.scale + " }, constraints:{ precision:" + ci.precision + ", scale:" + ci.scale + " }}",
-                                        liveChange: this.onNumberLiveChange.bind(this)
-                                    }));
-                                }
-                                else {
-                                    if (ci.maxLength !== null) {
-                                        col.setTemplate(new sap.m.Input({
-                                            value: "{" + arg + ">" + ci.name + "}",
-                                            maxLength: +ci.maxLength,
-                                            liveChange: this.onInputLiveChange.bind(this)
-                                        }));
-                                    }
-                                    else {
-                                        col.setTemplate(new sap.m.Input({
-                                            value: "{" + arg + ">" + ci.name + "}",
-                                            liveChange: this.onInputLiveChange.bind(this)
-                                        }));
-                                    }
-                                }
-                            } 
-
-                            if (ci.required) {
-                                col.getLabel().addStyleClass("requiredField");
-                            }
-
-                            if (ci.type === "STRING") oNewRow[ci.name] = "";
-                            //else if (ci.type === "NUMBER") oNewRow[ci.name] = "0";
-                            else if (ci.type === "BOOLEAN") oNewRow[ci.name] = false;
-                        })
-                }) 
-                
-                oNewRow["NEW"] = true;
-
-                if (arg == "matClass") {
-                    var iMaxSeq = 0;
-                    var iMaxSeq1 = 0;
-                    var iMaxSeq2 = 0;
-                    
-                    if (this._oDataBeforeChange.results.length > 0) {
-                        iMaxSeq1 = Math.max(...this._oDataBeforeChange.results.map(item => item.SEQ));
-                    }
-                    
-                    //var aNew = this.getView().getModel(pModel).getData();
-                    if (aNewRows.length > 0) {
-                        iMaxSeq2 = Math.max(...aNewRows.map(item => item.SEQ));
-                    }
-                    
-                    iMaxSeq = (iMaxSeq1 > iMaxSeq2 ? iMaxSeq1 : iMaxSeq2) + 1;
-                    oNewRow["SEQ"] = iMaxSeq.toString();
-                } else if (arg == "matAttrib") {
-                    var iMaxAttrib = 0;
-                    var iMaxAttrib1 = 0;
-                    var iMaxAttrib2 = 0;
-                    
-                    if (this._oDataBeforeChange.results.length > 0) {
-                        iMaxAttrib1 = Math.max(...this._oDataBeforeChange.results.map(item => item.ATTRIBCD));
-                    }
-                    
-                    //var aNew = this.getView().getModel(pModel).getData();
-                    if (aNewRows.length > 0) {
-                        iMaxAttrib2 = Math.max(...aNewRows.map(item => item.ATTRIBCD));
-                    }
-                    
-                    iMaxAttrib = (iMaxAttrib1 > iMaxAttrib2 ? iMaxAttrib1 : iMaxAttrib2) + 1;
-                    oNewRow["ATTRIBCD"] = iMaxAttrib.toString().padStart(7, "0");
-                }
-
-                // Get column filters before create
-                if (_this.getView().byId(arg + "Tab").getBinding("rows")) {
-                    _aFilterTbl[arg] = _this.getView().byId(arg + "Tab").getBinding("rows").aFilters;
-                }
-
-                aNewRows.push(oNewRow);
-                this.getView().getModel(arg).setProperty("/results", aNewRows);
-                
-                // Remove filter
-                // Search filter
-                this.byId(arg + "Tab").getBinding("rows").filter(null, "Application");
-                // Column filter
-                this.clearSortFilter(arg + "Tab");
             },
 
             onEditMatType(oEvent) {
@@ -850,8 +743,10 @@ sap.ui.define([
                 _this.byId("btnTabLayoutMatType").setVisible(true);
 
                 _this.onTableResize("MatType","Min");
-                _this.setRowReadMode("matType");
-                _this.getView().getModel("matType").setProperty("/", _this._oDataBeforeChange);
+
+                // _this.setRowReadMode("matType");
+                // _this.getView().getModel("matType").setProperty("/", _this._oDataBeforeChange);
+                _this.onRefreshMatType();
                 _this._aInvalidValueState = [];
             },
 
@@ -884,9 +779,12 @@ sap.ui.define([
                 _this.byId("btnRefreshMatClass").setVisible(true);
                 _this.byId("btnFullScreenMatClass").setVisible(true);
                 _this.byId("btnTabLayoutMatClass").setVisible(true);
+
                 _this.onTableResize("MatClass","Min");
-                _this.setRowReadMode("matClass");
-                _this.getView().getModel("matClass").setProperty("/", _this._oDataBeforeChange);
+
+                // _this.setRowReadMode("matClass");
+                // _this.getView().getModel("matClass").setProperty("/", _this._oDataBeforeChange);
+                _this.onRefreshMatClass();
                 _this._aInvalidValueState = [];
             },
 
@@ -1051,29 +949,25 @@ sap.ui.define([
                 // Validate required field if has value.
                 var isValid = true;
                 var sInvalidMsg = "";
-                var aRequiredFields = this._aColumns[arg].filter(x => x.required).map(x => x.name);
-                //console.log("onsave", aRequiredFields, aNewEditRows, this._aColumns[arg], this.getView().getModel(arg).getData())
+                var aRequiredFields = this._aColumns[arg].filter(x => x.Mandatory).map(x => x.ColumnName);
+                
                 for (var i = 0; i < aRequiredFields.length; i++) {
                     var sRequiredField = aRequiredFields[i];
                     if (aNewEditRows.filter(x => !x[sRequiredField]).length > 0) {
                         isValid = false;
-                        sInvalidMsg = "\"" + this._aColumns[arg].filter(x => x.name == sRequiredField)[0].label + "\" is required."
+                        sInvalidMsg = "\"" + this._aColumns[arg].filter(x => x.ColumnName == sRequiredField)[0].ColumnLabel + "\" is required."
                         break;
                     }
                 }
 
                 if (!isValid) {
                     var bCompact = true;
-                    MessageBox.error(sInvalidMsg,
-                        {
-                            styleClass: bCompact ? "sapUiSizeCompact" : ""
-                        }
-                    );
+                    MessageBox.error(sInvalidMsg);
 
                     _this.closeLoadingDialog();
                     return;
                 }
-
+                console.log("onsave", _this._aColumns, aNewRows, aEditedRows, this._aEntitySet)
                 if (aNewRows.length > 0) {
                     var oModel = this.getOwnerComponent().getModel();
                     var iNew = 0;
@@ -1084,15 +978,15 @@ sap.ui.define([
                         var param = {};
 
                         _this._aColumns[arg].forEach(col => {
-                            if (col.creatable) {
+                            if (col.Creatable) {
                                 var cellValue;
 
-                                if (col.type == "BOOLEAN") {
-                                    if (item[col.name]) cellValue = "X";
+                                if (col.DataType == "BOOLEAN") {
+                                    if (item[col.ColumnName]) cellValue = "X";
                                     else cellValue = "";
-                                } else cellValue = item[col.name];
+                                } else cellValue = item[col.ColumnName];
 
-                                param[col.name] = cellValue;
+                                param[col.ColumnName] = cellValue;
                             }
                         })
 
@@ -1150,27 +1044,27 @@ sap.ui.define([
                         var entitySet = "/" + this._aEntitySet[arg] + "(";
                         var param = {};
 
-                        var iKeyCount = this._aColumns[arg].filter(col => col.key === true).length;
+                        var iKeyCount = this._aColumns[arg].filter(col => col.Key == true || col.Key == "X").length;
 
                         _this._aColumns[arg].forEach(col => {
-                            if (col.updatable) {
-                                if (!(arg == "matType" && col.name == "Desc")) {
+                            if (col.Editable) {
+                                if (!(arg == "matType" && col.ColumnName == "Desc")) {
                                     var cellValue;
 
-                                    if (col.type == "BOOLEAN") {
-                                        if (item[col.name]) cellValue = "X";
+                                    if (col.DataType == "BOOLEAN") {
+                                        if (item[col.ColumnName]) cellValue = "X";
                                         else cellValue = "";
-                                    } else cellValue = item[col.name];
+                                    } else cellValue = item[col.ColumnName];
     
-                                    param[col.name] = cellValue;
+                                    param[col.ColumnName] = cellValue;
                                 }
                             } 
 
                             if (iKeyCount === 1) { 
-                                if (col.key) entitySet += "'" + item[col.name] + "'" 
+                                if (col.Key == true || col.Key == "X") entitySet += "'" + item[col.ColumnName] + "'" 
                             }
                             else if (iKeyCount > 1) { 
-                                if (col.key) entitySet += col.name + "='" + item[col.name] + "',"
+                                if (col.Key == true || col.Key == "X") entitySet += col.ColumnName + "='" + item[col.ColumnName] + "',"
                             }
                         })
 
@@ -1346,8 +1240,8 @@ sap.ui.define([
 
                                     var sParam = "";
                                     _this._aColumns[pModel].forEach(col => {
-                                        if (col.key) {
-                                            sParam += col.name + "='" + oContext.getObject()[col.name] + "',";
+                                        if (col.Key == true || col.Key == "X") {
+                                            sParam += col.ColumnName + "='" + oContext.getObject()[col.ColumnName] + "',";
                                         }
                                     });
 
@@ -1376,7 +1270,7 @@ sap.ui.define([
             },
 
             onRefreshMatType() {
-                this.getMatType();
+                this.getMatType(_aSmartFilter, _sSmartFilterGlobal);
             },
 
             onRefreshFilter(pModel, pFilters, pFilterGlobal) {
@@ -1397,7 +1291,7 @@ sap.ui.define([
 
                     if (sQuery) {
                         this._aFilterableColumns[sTable].forEach(item => {
-                            var sDataType = this._aColumns[sTable].filter(col => col.name === item.name)[0].type;
+                            var sDataType = this._aColumns[sTable].filter(col => col.ColumnName === item.name)[0].type;
                             if (sDataType === "BOOLEAN") aFilter.push(new Filter(item.name, FilterOperator.EQ, sQuery));
                             else aFilter.push(new Filter(item.name, FilterOperator.Contains, sQuery));
                         })
@@ -1485,6 +1379,61 @@ sap.ui.define([
                 this.onCellClick(oEvent);
             },
 
+            setControlAppAction(pChange) {
+
+                // Material Type
+                this.byId("btnAddMatType").setVisible(pChange);
+                this.byId("btnEditMatType").setVisible(pChange);
+                this.byId("btnAddRowMatType").setVisible(false);
+                this.byId("btnRemoveRowMatType").setVisible(false);
+                this.byId("btnSaveMatType").setVisible(false);
+                this.byId("btnCancelMatType").setVisible(false);
+                this.byId("btnDeleteMatType").setVisible(pChange);
+                this.byId("btnRefreshMatType").setVisible(true);
+                this.byId("btnFullScreenMatType").setVisible(true);
+                this.byId("btnExitFullScreenMatType").setVisible(false);
+                this.byId("btnTabLayoutMatType").setVisible(true);
+
+                // Material Class
+                this.byId("btnAddMatClass").setVisible(pChange);
+                this.byId("btnEditMatClass").setVisible(pChange);
+                this.byId("btnAddRowMatClass").setVisible(false);
+                this.byId("btnRemoveRowMatClass").setVisible(false);
+                this.byId("btnSaveMatClass").setVisible(false);
+                this.byId("btnCancelMatClass").setVisible(false);
+                this.byId("btnDeleteMatClass").setVisible(pChange);
+                this.byId("btnRefreshMatClass").setVisible(true);
+                this.byId("btnFullScreenMatClass").setVisible(true);
+                this.byId("btnExitFullScreenMatClass").setVisible(false);
+                this.byId("btnTabLayoutMatClass").setVisible(true);
+
+                // Material Attribute
+                this.byId("btnAddMatAttrib").setVisible(pChange);
+                this.byId("btnEditMatAttrib").setVisible(pChange);
+                this.byId("btnAddRowMatAttrib").setVisible(false);
+                this.byId("btnRemoveRowMatAttrib").setVisible(false);
+                this.byId("btnSaveMatAttrib").setVisible(false);
+                this.byId("btnCancelMatAttrib").setVisible(false);
+                this.byId("btnDeleteMatAttrib").setVisible(pChange);
+                this.byId("btnRefreshMatAttrib").setVisible(true);
+                this.byId("btnFullScreenMatAttrib").setVisible(true);
+                this.byId("btnExitFullScreenMatAttrib").setVisible(false);
+                this.byId("btnTabLayoutMatAttrib").setVisible(true);
+
+                // Batch Control
+                this.byId("btnAddBatchControl").setVisible(pChange);
+                this.byId("btnEditBatchControl").setVisible(pChange);
+                this.byId("btnAddRowBatchControl").setVisible(false);
+                this.byId("btnRemoveRowBatchControl").setVisible(false);
+                this.byId("btnSaveBatchControl").setVisible(false);
+                this.byId("btnCancelBatchControl").setVisible(false);
+                this.byId("btnDeleteBatchControl").setVisible(pChange);
+                this.byId("btnRefreshBatchControl").setVisible(true);
+                this.byId("btnFullScreenBatchControl").setVisible(true);
+                this.byId("btnExitFullScreenBatchControl").setVisible(false);
+                this.byId("btnTabLayoutBatchControl").setVisible(true);
+            },
+
             onTabSelect(oEvent) {
                 this._selectedTabKey = oEvent.getParameters().selectedKey;
                 if (this._selectedTabKey == "matAttrib") {
@@ -1501,7 +1450,7 @@ sap.ui.define([
 
                 if (sQuery) {
                     this._aFilterableColumns[sTable].forEach(item => {
-                        var sDataType = this._aColumns[sTable].filter(col => col.name === item.name)[0].type;
+                        var sDataType = this._aColumns[sTable].filter(col => col.ColumnName === item.name)[0].type;
                         if (sDataType === "BOOLEAN") aFilter.push(new Filter(item.name, FilterOperator.EQ, sQuery));
                         else aFilter.push(new Filter(item.name, FilterOperator.Contains, sQuery));
                     })
@@ -1777,23 +1726,6 @@ sap.ui.define([
                 }
             },
 
-            setReqColHdrColor(arg) {
-                var oTable = this.byId(arg + "Tab");
-
-                oTable.getColumns().forEach((col, idx) => {
-                    if (col.getLabel().getText().includes("*")) {
-                        col.getLabel().setText(col.getLabel().getText().replaceAll("*", ""));
-                    }   
-
-                    this._aColumns[arg].filter(item => item.label === col.getLabel().getText())
-                        .forEach(ci => {
-                            if (ci.required) {
-                                col.getLabel().removeStyleClass("requiredField");
-                            }
-                        })
-                })
-            },
-
             resetVisibleCols(arg) {
                 var aData = this.getView().getModel(arg).getData().results;
                 console.log("resetVisibleCols", aData)
@@ -1927,6 +1859,8 @@ sap.ui.define([
                 oDDTextParam.push({CODE: "MATATTRIB"});
                 oDDTextParam.push({CODE: "BATCHCTRL"});
                 oDDTextParam.push({CODE: "ROWS"});
+                oDDTextParam.push({CODE: "MTART"});
+                oDDTextParam.push({CODE: "MTBEZ"});
 
                 // MessageBox
                 oDDTextParam.push({CODE: "INFO_NO_SELECTED"});
