@@ -141,3 +141,11 @@
 .sapMDialogScroll {
     height: 98%;
 }
+
+.sapMLabelRequired, .sapMLabelRequired::before {
+    color: #c75858 !important;
+}
+
+.selHdrKeyFontStyle {
+    font-style: italic;
+}

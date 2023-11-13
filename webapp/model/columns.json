@@ -28,7 +28,7 @@
             "ValueHelp": {"show": true, "items": {"path": "processcd", "value": "PROCESSCD", "text": "DESC1"},
             "SuggestionItems": {"path": "processcd>/", "text": "{processcd>PROCESSCD}", "additionalText": "{processcd>DESC1}", "maxSuggestionWidth": "220px"},
             "columns": "tvh_processcd"
-            }
+            }, "TextFormatMode": "ValueKey"
         },
         {"name": "EXCMATTYP", "position": 8, "type": "Edm.String", "visible": true, "required": false, "width": "150px", "hideOnChange": false, "showable": true, "sort": "",
             "valueHelp": {"show": true, "items": {"path": "/ExcessMatTypeRscSet", "value": "MATTYP", "text": "MTBEZ"},
@@ -38,7 +38,7 @@
             "ValueHelp": {"show": true, "items": {"path": "excmattyp", "value": "MATTYP", "text": "MTBEZ"},
             "SuggestionItems": {"path": "excmattyp>/", "text": "{excmattyp>MATTYP}", "additionalText": "{excmattyp>MTBEZ}", "maxSuggestionWidth": "220px"},
             "columns": "tvh_excmattyp"
-            }
+            }, "TextFormatMode": "ValueKey"
         }
     ],
     "matClass": [

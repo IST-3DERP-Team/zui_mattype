@@ -103,7 +103,7 @@ sap.ui.define([
                 oModel.read("/ColumnsSet", {
                     success: function (oData, oResponse) {
                         oJSONColumnsModel.setData(oData);
-                        console.log("ColumnsSet", oData)
+
                         if (oData.results.length > 0) {
                             oData.results.forEach(col => {
                                 if (col.ColumnName == "COMPLETE")
@@ -150,7 +150,7 @@ sap.ui.define([
                 if (sColumnType === "NUMBER") {
                     return new sap.ui.table.Column({
                         id: pModel + "-" + sColumnId,
-                        label: sColumnLabel,
+                        label: new sap.m.Text({text: sColumnLabel}),
                         template: new sap.m.Text({ text: "{" + sColumnId + "}", wrapping: false }),
                         width: sColumnWidth + "px",
                         hAlign: "End",
@@ -164,7 +164,7 @@ sap.ui.define([
                 } else if (sColumnType === "BOOLEAN") {
                     return new sap.ui.table.Column({
                         id: pModel + "-" + sColumnId,
-                        label: sColumnLabel,
+                        label: new sap.m.Text({text: sColumnLabel}),
                         template: new sap.m.CheckBox({
                             selected: "{" + sColumnId + "}",
                             editable: false
@@ -181,7 +181,7 @@ sap.ui.define([
                 } else {
                     return new sap.ui.table.Column({
                         id: pModel + "-" + sColumnId,
-                        label: sColumnLabel,
+                        label: new sap.m.Text({text: sColumnLabel}),
                         template: _this.columnTemplate(sColumnId),
                         width: sColumnWidth + "px",
                         hAlign: "Left",
@@ -260,6 +260,10 @@ sap.ui.define([
             pColumn.forEach(item => {
                 if (_this._oModelColumns[pModel] && _this._oModelColumns[pModel].filter(x => x.ColumnName == item.ColumnName).length > 0) {
                     item.ValueHelp = _this._oModelColumns[pModel].filter(x => x.ColumnName == item.ColumnName)[0].ValueHelp;
+
+                    if (_this._oModelColumns[pModel].filter(x => x.ColumnName == item.ColumnName)[0].TextFormatMode) {
+                        item.TextFormatMode = _this._oModelColumns[pModel].filter(x => x.ColumnName == item.ColumnName)[0].TextFormatMode;   
+                    }
                 }
                 else {
                     item.ValueHelp = { "show": false };
@@ -302,10 +306,41 @@ sap.ui.define([
 
                 _this._aColumns[pModel].filter(item => item.ColumnName === sColName)
                     .forEach(ci => {
-                        if (ci.DataType === "STRING" || ci.DataType === "DATETIME" || ci.DataType === "NUMBER") {
+                        if (ci.TextFormatMode && ci.TextFormatMode !== "" && ci.TextFormatMode !== "Key" && ci.ValueHelp && ci.ValueHelp["items"].text && ci.ValueHelp["items"].value !== ci.ValueHelp["items"].text) {
+                            col.setTemplate(new sap.m.Text({
+                                text: {
+                                    parts: [  
+                                        { path: pModel + ">" + sColName }
+                                    ],  
+                                    formatter: function(sKey) {
+                                        var oValue = _this.getView().getModel(ci.ValueHelp["items"].path).getData().filter(v => v[ci.ValueHelp["items"].value] === sKey);
+
+                                        if (oValue && oValue.length > 0) {
+                                            if (ci.TextFormatMode === "Value") {
+                                                return oValue[0][ci.ValueHelp["items"].text];
+                                            }
+                                            else if (ci.TextFormatMode === "ValueKey") {
+                                                return oValue[0][ci.ValueHelp["items"].text] + " (" + sKey + ")";
+                                            }
+                                            else if (ci.TextFormatMode === "KeyValue") {
+                                                return sKey + " (" + oValue[0][ci.ValueHelp["items"].text] + ")";
+                                            }
+                                            else { 
+                                                return sKey;
+                                            }
+                                        }
+                                        else return sKey;
+                                    }
+                                },
+                                wrapping: false,
+                                tooltip: "{" + pModel + ">" + sColName + "}"
+                            }));
+                        }
+                        else if (ci.DataType === "STRING" || ci.DataType === "DATETIME" || ci.DataType === "NUMBER") {
                             col.setTemplate(new sap.m.Text({
                                 text: "{" + pModel + ">" + sColName + "}",
-                                wrapping: false
+                                wrapping: false,
+                                tooltip: "{" + pModel + ">" + sColName + "}"
                             }));
                         }
                         else if (ci.DataType === "BOOLEAN") {
@@ -326,9 +361,16 @@ sap.ui.define([
             
             TableFilter.applyColFilters(_this);
             _this.setReqColHdrColor(pModel);
+            _this._sDataMode = "READ";
         },
 
         setRowCreateMode(pModel) {
+            var oInputEventDelegate = {
+                onkeydown: function(oEvent){
+                    _this.onInputKeyDown(oEvent);
+                },
+            };
+
             var oTable = this.byId(pModel + "Tab");
             oTable.clearSelection();
 
@@ -402,6 +444,7 @@ sap.ui.define([
                                     });
                                 }
 
+                                oInput.addEventDelegate(oInputEventDelegate);
                                 col.setTemplate(oInput);
                             }
                             else if (ci.DataType === "BOOLEAN") {
@@ -418,7 +461,7 @@ sap.ui.define([
                                     value: "{path:'" + pModel + ">" + sColName + "', formatOptions:{ minFractionDigits:" + ci.scale + ", maxFractionDigits:" + ci.scale + " }, constraints:{ precision:" + ci.precision + ", scale:" + ci.scale + " }}",
                                     liveChange: this.onNumberLiveChange.bind(this), 
                                     enabled: true
-                                }));
+                                }).addEventDelegate(oInputEventDelegate));
                             }
                             else if (ci.DataType === "DATE") {
                                 col.setTemplate(new sap.m.DatePicker({
@@ -433,7 +476,7 @@ sap.ui.define([
                                 col.setTemplate(new sap.m.Input({
                                     value: "{" + pModel + ">" + sColName + "}",
                                     liveChange: this.onInputLiveChange.bind(this)
-                                }));
+                                }).addEventDelegate(oInputEventDelegate));
                             }
                         }
 
@@ -491,10 +534,16 @@ sap.ui.define([
             
             _this.byId(pModel + "Tab").getBinding("rows").filter(null, "Application");
             _this.clearSortFilter(pModel + "Tab");
+            _this._sDataMode = "NEW";
         },
 
         setRowEditMode(pModel) {
             var oTable = _this.byId(pModel + "Tab");
+            var oInputEventDelegate = {
+                onkeydown: function(oEvent){
+                    _this.onInputKeyDown(oEvent);
+                },
+            };
             
             oTable.getColumns().forEach((col, idx) => {
                 var sColName = "";
@@ -566,6 +615,8 @@ sap.ui.define([
                                     });
                                 }
 
+                                oInput.addEventDelegate(oInputEventDelegate);
+
                                 col.setTemplate(oInput);
                             }
                             else if (ci.DataType === "BOOLEAN") {
@@ -582,7 +633,7 @@ sap.ui.define([
                                     value: "{path:'" + pModel + ">" + sColName + "', formatOptions:{ minFractionDigits:" + ci.scale + ", maxFractionDigits:" + ci.scale + " }, constraints:{ precision:" + ci.precision + ", scale:" + ci.scale + " }}",
                                     liveChange: this.onNumberLiveChange.bind(this), 
                                     enabled: true
-                                }));
+                                }).addEventDelegate(oInputEventDelegate));
                             }
                             else if (ci.DataType === "DATE") {
                                 col.setTemplate(new sap.m.DatePicker({
@@ -597,7 +648,7 @@ sap.ui.define([
                                 col.setTemplate(new sap.m.Input({
                                     value: "{" + pModel + ">" + sColName + "}",
                                     liveChange: this.onInputLiveChange.bind(this)
-                                }));
+                                }).addEventDelegate(oInputEventDelegate));
                             }
                         }
 
@@ -609,6 +660,7 @@ sap.ui.define([
             })
 
             _this.getView().getModel(pModel).getData().results.forEach(item => item.EDITED = false);
+            _this._sDataMode = "EDIT";
         },
 
         handleValueHelp: function(oEvent) {
@@ -1054,6 +1106,115 @@ sap.ui.define([
                         }
                     })
             })
+        },
+
+        onInputKeyDown(oEvent) {
+            if (oEvent.key === "ArrowUp" || oEvent.key === "ArrowDown") {
+                //prevent increase/decrease of number value
+                oEvent.preventDefault();
+
+                var sTableId = oEvent.srcControl.oParent.oParent.sId;
+                var oTable = _this.byId(sTableId);
+                var sModelName = oEvent.srcControl.getBindingInfo("value").parts[0].model;
+                var sColumnName = oEvent.srcControl.getBindingInfo("value").parts[0].path;
+                var sCurrentRowIndex = +oEvent.srcControl.oParent.getBindingContext(sModelName).sPath.replace("/results/", "");
+                var sColumnIndex = -1;
+                var sCurrentRow = -1;
+                var sNextRow = -1;
+                var sActiveRow = -1;
+                var iFirstVisibleRowIndex = oTable.getFirstVisibleRow();
+                var iVisibleRowCount = oTable.getVisibleRowCount();
+
+                oTable.getModel().setProperty(oEvent.srcControl.oParent.getBindingContext(sModelName).sPath + "/" + oEvent.srcControl.getBindingInfo("value").parts[0].path, oEvent.srcControl.getValue());
+
+                //get active row (arrow down)
+                oTable.getBinding("rows").aIndices.forEach((item, index) => {
+                    if (item === sCurrentRowIndex) { sCurrentRow = index; }
+                    if (sCurrentRow !== -1 && sActiveRow === -1) { 
+                        if ((sCurrentRow + 1) === index) { sActiveRow = item }
+                        else if ((index + 1) === oTable.getBinding("rows").aIndices.length) { sActiveRow = item }
+                    }
+                })
+                
+                //clear active row
+                oTable.getModel(sModelName).getData().results.forEach(row => row.ACTIVE = "");
+
+                //get next row to focus and active row (arrow up)
+                if (oEvent.key === "ArrowUp") { 
+                    if (sCurrentRow !== 0) {
+                        sActiveRow = oTable.getBinding("rows").aIndices.filter((fItem, fIndex) => fIndex === (sCurrentRow - 1))[0];
+                    }
+                    else { sActiveRow = oTable.getBinding("rows").aIndices[0] }
+
+                    sCurrentRow = sCurrentRow === 0 ? sCurrentRow : sCurrentRow - iFirstVisibleRowIndex;
+                    sNextRow = sCurrentRow === 0 ? 0 : sCurrentRow - 1;
+                }
+                else if (oEvent.key === "ArrowDown") { 
+                    sCurrentRow = sCurrentRow - iFirstVisibleRowIndex;
+                    sNextRow = sCurrentRow + 1;
+                }
+
+                //set active row
+                oTable.getModel(sModelName).setProperty("/results/" + sActiveRow + "/ACTIVE", "X");
+
+                //auto-scroll up/down
+                if (oEvent.key === "ArrowDown" && (sNextRow + 1) < oTable.getModel(sModelName).getData().results.length && (sNextRow + 1) > iVisibleRowCount) {
+                    oTable.setFirstVisibleRow(iFirstVisibleRowIndex + 1);
+                }   
+                else if (oEvent.key === "ArrowUp" && sCurrentRow === 0 && sNextRow === 0 && iFirstVisibleRowIndex !== 0) { 
+                    oTable.setFirstVisibleRow(iFirstVisibleRowIndex - 1);
+                }
+
+                //get the cell to focus
+                oTable.getRows()[sCurrentRow].getCells().forEach((cell, index) => {
+                    if (cell.getBindingInfo("value") !== undefined) {
+                        if (cell.getBindingInfo("value").parts[0].path === sColumnName) { sColumnIndex = index; }
+                    }
+                })
+                
+                if (oEvent.key === "ArrowDown") {
+                    sNextRow = sNextRow === iVisibleRowCount ? sNextRow - 1 : sNextRow;
+                }
+
+                //set focus on cell
+                setTimeout(() => {
+                    oTable.getRows()[sNextRow].getCells()[sColumnIndex].focus();
+                    oTable.getRows()[sNextRow].getCells()[sColumnIndex].getFocusDomRef().select();
+                }, 100);
+
+                //set row highlight
+                this.setActiveRowHighlight(sModelName);
+            }
+        },
+
+        onTableClick(oEvent) {
+            var oControl = oEvent.srcControl;
+            var sTabId = oControl.sId.split("--")[oControl.sId.split("--").length - 1];
+
+            while (sTabId.substr(sTabId.length - 3) !== "Tab") {                    
+                oControl = oControl.oParent;
+                sTabId = oControl.sId.split("--")[oControl.sId.split("--").length - 1];
+            }
+            
+            if (_this._sDataMode === "READ") _this._sActiveTable = sTabId;
+        },
+
+        formatValueHelp: function(sValue, sPath, sKey, sText, sFormat) {
+            // console.log(sValue, sPath, sKey, sText, sFormat);
+            var oValue = this.getView().getModel(sPath).getData().filter(v => v[sKey] === sValue);
+
+            if (oValue && oValue.length > 0) {
+                if (sFormat === "Value") {
+                    return oValue[0][sText];
+                }
+                else if (sFormat === "ValueKey") {
+                    return oValue[0][sText] + " (" + sValue + ")";
+                }
+                else if (sFormat === "KeyValue") {
+                    return sValue + " (" + oValue[0][sText] + ")";
+                }
+            }
+            else return sValue;
         },
 
         //******************************************* */

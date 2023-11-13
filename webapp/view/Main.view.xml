@@ -10,28 +10,64 @@
 
     <Page id="page" enableScrolling="false" class="sapUiNoContentPadding" showHeader="false">
         <dependents>
-            <core:CommandExecution id="CE_NEW" command="New" enabled="true" execute="onCreate('')" />
-            <core:CommandExecution id="CE_EDIT" command="Edit" enabled="true" execute="onEdit('')" />
-            <core:CommandExecution id="CE_DELETE" command="Delete" enabled="true" execute="onDelete('')" />
-            <core:CommandExecution id="CE_SAVE" command="Save" enabled="true" execute="onSave('')" />
-            <core:CommandExecution id="CE_CANCEL" command="Cancel" enabled="true" execute="onCancel('')" />
+            <core:CommandExecution id="CE_NEW" command="New" enabled="true" execute="onCreate" />
+            <core:CommandExecution id="CE_EDIT" command="Edit" enabled="true" execute="onEdit" />
+            <core:CommandExecution id="CE_DELETE" command="Delete" enabled="true" execute="onDelete" />
+            <core:CommandExecution id="CE_SAVE" command="Save" enabled="true" execute="onSubmit" />
+            <core:CommandExecution id="CE_CANCEL" command="Cancel" enabled="true" execute="onCancel" />
             <core:CommandExecution id="CE_REFRESH" command="Refresh" enabled="true" execute="onRefresh" />
         </dependents>
         <content>
     
             <VBox id="vbMain" fitContainer="true">
-                <sfb:SmartFilterBar id="sfbMatType" entitySet="ZVB_3DERP_MATTYPE_FILTER" enableBasicSearch="true" search="onSearch" 
+                <sfb:SmartFilterBar id="sfbMatType" entitySet="ZVB_3DERP_MATTYPE_FILTER" enableBasicSearch="false" search="onSearch" 
                     persistencyKey="3DERP_MatTypeKey" filterContainerWidth="14rem" useToolbar="true" showClearOnFB="true" initialise="onSFBInitialise">
                     <sfb:controlConfiguration>
                         <sfb:ControlConfiguration id="filterSbu" key="SBU" groupId="_BASIC" label="{caption>/SBU}" controlType="dropDownList" filterType="single"
-                            displayBehaviour="idOnly" mandatory="mandatory" index="0">
+                            displayBehaviour="idOnly" mandatory="mandatory" index="0" change="onSBUChange">
                         </sfb:ControlConfiguration>
                     </sfb:controlConfiguration>
+
                     <sfb:controlConfiguration>
                         <sfb:ControlConfiguration id="filterMatType" key="MATTYP" groupId="_BASIC" label="{caption>/MATTYPE}" controlType="dropDownList" 
                             displayBehaviour="idAndDescription" mandatory="notMandatory" index="1">
                         </sfb:ControlConfiguration>
                     </sfb:controlConfiguration>
+
+                    <!-- <sfb:controlConfiguration>
+                        <sfb:ControlConfiguration id="filterMatType" key="MATTYP" label="{caption>/MATTYPE}" groupId="_BASIC" preventInitialDataFetchInValueHelpDialog="false" width="15rem" >
+                            <sfb:customControl>
+                                <MultiInput id="multiInputMatTyp"
+                                    change="onCustomSmartFilterValueHelpChange"
+                                    valueHelpRequest=".onCustomSmartFilterValueHelp"
+                                    maxSuggestionWidth="350px"
+                                    suggestionRows="{
+                                        path: 'materialType>/results',
+                                        sorter: { path: 'MaterialType' },
+                                        length: 1000,
+                                        templateShareable: false
+                                    }">
+                                    <suggestionColumns>
+                                        <Column width="100px">
+                                            <Label text="Material Type"/>
+                                        </Column>
+                                        <Column width="200px">
+                                            <Label text="Description"/>
+                                        </Column>
+                                    </suggestionColumns>
+                                    <suggestionRows>
+                                        <ColumnListItem>
+                                            <cells>
+                                                <Label text="{materialType>MaterialType}" />
+                                                <Label text="{materialType>Description}" />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </suggestionRows>
+                                </MultiInput>
+                            </sfb:customControl>
+                        </sfb:ControlConfiguration>
+                    </sfb:controlConfiguration> -->
+
                     <sfb:layoutData>
                         <FlexItemData shrinkFactor="0"/>
                     </sfb:layoutData>
@@ -59,8 +95,8 @@
                         <uiT:RowSettings highlight="{= ${matType>Edited} === true ? 'Warning' : null}" />
                     </uiT:rowSettingsTemplate>
                     <uiT:extension>
-                        <Toolbar>
-                            <Text text="{ui>/rowCountMatType} {caption>/ROWS}" />
+                        <OverflowToolbar>
+                            <Text text="{ui>/rowCountMatType} {caption>/MATTYPE}" class="selHdrKeyFontStyle" />
                             <ToolbarSpacer/>
                             <Button id="btnAddMatType" 
                                 icon="sap-icon://add"
@@ -108,10 +144,10 @@
                                 tooltip="{caption>/SAVELAYOUT}" 
                                 press="onSaveTableLayout"
                                 visible="true" />
-                        </Toolbar>
+                        </OverflowToolbar>
                     </uiT:extension>
                     <uiT:layoutData>
-                        <FlexItemData id="fidHeader" growFactor="0.8" baseSize="0%"/>
+                        <FlexItemData id="fidHeader" growFactor="1" baseSize="0%"/>
                     </uiT:layoutData>
                 </uiT:Table>
                 
@@ -157,10 +193,10 @@
                                                 <uiT:RowSettings highlight="{= ${matClass>Edited} === true ? 'Warning' : null}" />
                                             </uiT:rowSettingsTemplate>
                                             <uiT:extension>
-                                                <Toolbar>
-                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
-                                                    <ToolbarSeparator/>
-                                                    <Text text="{ui>/rowCountMatClass} {caption>/ROWS}" />
+                                                <OverflowToolbar>
+                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType} ( {ui>/rowCountMatClass} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                                    <!-- <ToolbarSeparator/>
+                                                    <Text text="{ui>/rowCountMatClass} {caption>/ITEMS}" /> -->
                                                     <ToolbarSpacer/>
                                                     <Button id="btnAddMatClass" 
                                                         icon="sap-icon://add"
@@ -208,7 +244,7 @@
                                                         tooltip="{caption>/SAVELAYOUT}" 
                                                         press="onSaveTableLayout"
                                                         visible="true" />
-                                                </Toolbar>
+                                                </OverflowToolbar>
                                             </uiT:extension>
                                         </uiT:Table>
                                     </IconTabFilter>
@@ -235,10 +271,10 @@
                                                 <uiT:RowSettings highlight="{= ${matAttrib>Edited} === true ? 'Warning' : null}" />
                                             </uiT:rowSettingsTemplate>
                                             <uiT:extension>
-                                                <Toolbar>
-                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType}, {caption>/MATTYPCLS}: {ui>/activeMatClass}" class="selHdrKeyFontStyle" />
-                                                    <ToolbarSeparator/>
-                                                    <Text text="{ui>/rowCountMatAttrib} {caption>/ROWS}" />
+                                                <OverflowToolbar>
+                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType}, {caption>/MATTYPCLS}: {ui>/activeMatClass} ( {ui>/rowCountMatAttrib} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                                    <!-- <ToolbarSeparator/>
+                                                    <Text text="{ui>/rowCountMatAttrib} {caption>/ITEMS}" /> -->
                                                     <ToolbarSpacer/>
                                                     <Button id="btnAddMatAttrib" 
                                                         icon="sap-icon://add"
@@ -286,7 +322,7 @@
                                                         tooltip="{caption>/SAVELAYOUT}" 
                                                         press="onSaveTableLayout"
                                                         visible="true" />
-                                                </Toolbar>
+                                                </OverflowToolbar>
                                             </uiT:extension>
                                         </uiT:Table>
                                     </IconTabFilter>
@@ -316,10 +352,10 @@
                                     <uiT:RowSettings highlight="{= ${batchControl>Edited} === true ? 'Warning' : null}" />
                                 </uiT:rowSettingsTemplate>
                                 <uiT:extension>
-                                    <Toolbar>
-                                        <Text text="Material Type: {ui>/activeMatType}" class="selHdrKeyFontStyle" />
-                                        <ToolbarSeparator/>
-                                        <Text text="{ui>/rowCountBatchControl} {caption>/ROWS}" />
+                                    <OverflowToolbar>
+                                        <Text text="Material Type: {ui>/activeMatType} ( {ui>/rowCountBatchControl} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                        <!-- <ToolbarSeparator/>
+                                        <Text text="{ui>/rowCountBatchControl} {caption>/ITEMS}" /> -->
                                         <ToolbarSpacer/>
                                         <Button id="btnAddBatchControl" 
                                             icon="sap-icon://add"
@@ -367,7 +403,7 @@
                                             tooltip="{caption>/SAVELAYOUT}" 
                                             press="onSaveTableLayout"
                                             visible="true" />
-                                    </Toolbar>
+                                    </OverflowToolbar>
                                 </uiT:extension>
                             </uiT:Table>
                         </IconTabFilter>

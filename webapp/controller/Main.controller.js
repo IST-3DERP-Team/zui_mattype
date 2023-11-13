@@ -1,12 +1,15 @@
 sap.ui.define([
     "./BaseController",
     "sap/ui/model/json/JSONModel",
-    "sap/m/MessageBox"
+    "sap/m/MessageBox",
+    "sap/m/Token",
+    'sap/m/SearchField',
+    'sap/ui/model/type/String',
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (BaseController, JSONModel, MessageBox) {
+    function (BaseController, JSONModel, MessageBox, Token, SearchField, typeString) {
         "use strict";
 
         var _this;
@@ -19,12 +22,17 @@ sap.ui.define([
             
             onInit: function () {
                 _this = this;
+                _this._sActiveTable = "matTypeTab";
+                _this._sDataMode = "READ";   
                 
                 _this.getCaption();
 
                 var oModel = this.getOwnerComponent().getModel("ZVB_3DERP_MATTYPE_FILTER_CDS");
                 var oSmartFilter = this.getView().byId("sfbMatType");
                 oSmartFilter.setModel(oModel);
+
+                // this._oMultiInput = this.getView().byId("multiInputMatTyp");
+                // this._oMultiInput.addValidator(this._onMultiInputValidate.bind(this));
 
                 _this.initializeComponent();
             },
@@ -94,6 +102,10 @@ sap.ui.define([
 
                     onAfterRendering: function(oEvent) {
                         _this.onAfterTableRendering(oEvent);
+                    },
+
+                    onclick: function(oEvent) {
+                        _this.onTableClick(oEvent);
                     }
                 };
 
@@ -116,12 +128,12 @@ sap.ui.define([
                 //console.log("onAfterTableRendering", pTableId)
             },
 
-            onSearch(oEvent) {
+            async onSearch(oEvent) {
                 this.showLoadingDialog("Loading...");
 
                 var aSmartFilter = this.getView().byId("sfbMatType").getFilters();
                 var sSmartFilterGlobal = "";
-                if (oEvent) sSmartFilterGlobal = oEvent.getSource()._oBasicSearchField.mProperties.value;
+                // if (oEvent) sSmartFilterGlobal = oEvent.getSource()._oBasicSearchField.mProperties.value;
                 
                 _aSmartFilter = aSmartFilter;
                 _sSmartFilterGlobal = sSmartFilterGlobal;
@@ -132,6 +144,8 @@ sap.ui.define([
                 this.enableDisableButton("matClass", "enable");
                 this.enableDisableButton("matAttrib", "enable");
                 this.enableDisableButton("batchControl", "enable");
+
+                await this.getResources();
             },
 
             getMatType(pFilters, pFilterGlobal) {
@@ -536,7 +550,7 @@ sap.ui.define([
                     this.onTableResize("MatAttrib","Max");
                     this.byId("btnExitFullScreenMatAttrib").setVisible(false);
                     this.byId("btnTabLayoutMatAttrib").setVisible(false);
-
+                    // console.log(this.getView().getModel("matAttrib").getData())
                     this._oDataBeforeChange = jQuery.extend(true, {}, this.getView().getModel("matAttrib").getData());
                     this.setRowCreateMode("matAttrib");
                 } else {
@@ -717,7 +731,7 @@ sap.ui.define([
                 var aEditedRows = this.getView().getModel("matType").getData().results.filter(item => item.EDITED === true);
 
                 if (aNewRows.length > 0 || aEditedRows.length > 0) {
-                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                    MessageBox.confirm(_oCaption.CONF_DISCARD_CHANGE, {
                         actions: ["Yes", "No"],
                         onClose: function (sAction) {
                             if (sAction == "Yes") {
@@ -755,7 +769,7 @@ sap.ui.define([
                 var aEditedRows = this.getView().getModel("matClass").getData().results.filter(item => item.EDITED === true);
 
                 if (aNewRows.length > 0 || aEditedRows.length > 0) {
-                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                    MessageBox.confirm(_oCaption.CONF_DISCARD_CHANGE, {
                         actions: ["Yes", "No"],
                         onClose: function (sAction) {
                             if (sAction == "Yes") {
@@ -793,7 +807,7 @@ sap.ui.define([
                 var aEditedRows = this.getView().getModel("matAttrib").getData().results.filter(item => item.EDITED === true);
 
                 if (aNewRows.length > 0 || aEditedRows.length > 0) {
-                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                    MessageBox.confirm(_oCaption.CONF_DISCARD_CHANGE, {
                         actions: ["Yes", "No"],
                         onClose: function (sAction) {
                             if (sAction == "Yes") {
@@ -828,7 +842,7 @@ sap.ui.define([
                 var aEditedRows = this.getView().getModel("batchControl").getData().results.filter(item => item.EDITED === true);
 
                 if (aNewRows.length > 0 || aEditedRows.length > 0) {
-                    MessageBox.confirm(_oCaption.CONFIRM_DISREGARD_CHANGE, {
+                    MessageBox.confirm(_oCaption.CONF_DISCARD_CHANGE, {
                         actions: ["Yes", "No"],
                         onClose: function (sAction) {
                             if (sAction == "Yes") {
@@ -1205,22 +1219,22 @@ sap.ui.define([
             },
 
             onDeleteMatType() {
-                this.onDelete("matType", "MaterialTypeSet");            
+                this.delete("matType", "MaterialTypeSet");            
             },
 
             onDeleteMatClass() {
-                this.onDelete("matClass", "MaterialClsSet");
+                this.delete("matClass", "MaterialClsSet");
             },
 
             onDeleteMatAttrib() {
-                this.onDelete("matAttrib", "MaterialAttribSet");
+                this.delete("matAttrib", "MaterialAttribSet");
             },
 
             onDeleteBatchControl() {
-                this.onDelete("batchControl", "BatchControlSet");
+                this.delete("batchControl", "BatchControlSet");
             },
 
-            onDelete(pModel, pEntity) {
+            delete(pModel, pEntity) {
                 var oModel = this.getOwnerComponent().getModel();
                 var oTable = this.byId(pModel + "Tab");
                 var aSelRows = oTable.getSelectedIndices();
@@ -1728,7 +1742,7 @@ sap.ui.define([
 
             resetVisibleCols(arg) {
                 var aData = this.getView().getModel(arg).getData().results;
-                console.log("resetVisibleCols", aData)
+
                 this._oDataBeforeChange.results.forEach((item, idx) => {
                     console.log("test1", item)
                     if (item.DELETED) {
@@ -1753,6 +1767,7 @@ sap.ui.define([
 
                 if (pType == "matClass" || pType == "matAttrib") {
                     var oIconTabBar = this.byId("itbDetail");
+
                     if (pEditable) {
                         oIconTabBar.getItems().filter(item => item.getProperty("key") !== oIconTabBar.getSelectedKey())
                             .forEach(item => item.setProperty("enabled", false));
@@ -1769,6 +1784,7 @@ sap.ui.define([
                     }
                 } else if (pType == "batchControl") {
                     var oIconTabBar = this.byId("itbDetail");
+
                     if (pEditable) {
                         oIconTabBar.getItems().filter(item => item.getProperty("key") !== oIconTabBar.getSelectedKey())
                             .forEach(item => item.setProperty("enabled", false));
@@ -1786,7 +1802,6 @@ sap.ui.define([
                 // var oTable = this.getView().byId("mainTab");
                 var oColumns = oTable.getColumns();
                 var vSBU = this.getView().getModel("ui").getData().sbu;
-                console.log(oColumns)
 
                 // return;
                 var oParam = {
@@ -1858,13 +1873,13 @@ sap.ui.define([
                 oDDTextParam.push({CODE: "MATTYPCLSF"});
                 oDDTextParam.push({CODE: "MATATTRIB"});
                 oDDTextParam.push({CODE: "BATCHCTRL"});
-                oDDTextParam.push({CODE: "ROWS"});
+                oDDTextParam.push({CODE: "ITEMS"});
                 oDDTextParam.push({CODE: "MTART"});
                 oDDTextParam.push({CODE: "MTBEZ"});
 
                 // MessageBox
                 oDDTextParam.push({CODE: "INFO_NO_SELECTED"});
-                oDDTextParam.push({CODE: "CONFIRM_DISREGARD_CHANGE"});
+                oDDTextParam.push({CODE: "CONF_DISCARD_CHANGE"});
                 oDDTextParam.push({CODE: "INFO_INVALID_SAVE"});
                 oDDTextParam.push({CODE: "WARN_NO_DATA_MODIFIED"});
                 oDDTextParam.push({CODE: "INFO_SEL_ONE_COL"});
@@ -1894,6 +1909,121 @@ sap.ui.define([
                         _this.closeLoadingDialog();
                     }
                 });
-            }
+            },
+
+            onCreate() {
+                if (this._sDataMode === "READ" && _this.getView().getModel("base").getProperty("/appChange")) {
+                    if (this._sActiveTable === "matTypeTab") { this.onCreateMatType(); }
+                    else if (this._sActiveTable === "matClassTab") { this.onCreateMatClass(); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onCreateMatAttrib(); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onCreateBatchControl(); }
+                }
+            },
+
+            onEdit() {
+                if (this._sDataMode === "READ" && _this.getView().getModel("base").getProperty("/appChange")) {
+                    if (this._sActiveTable === "matTypeTab") { this.onEditMatType(); }
+                    else if (this._sActiveTable === "matClassTab") { this.onEditMatClass(); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onEditMatAttrib(); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onEditBatchControl(); }
+                }
+            },
+            
+            onDelete() {
+                if (this._sDataMode === "READ" && _this.getView().getModel("base").getProperty("/appChange")) {
+                    if (this._sActiveTable === "matTypeTab") { this.onDeleteMatType(); }
+                    else if (this._sActiveTable === "matClassTab") { this.onDeleteMatClass(); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onDeleteMatAttrib(); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onDeleteBatchControl(); }
+                }
+            },
+            
+            onSubmit() {
+                if (this._sDataMode === "NEW" || _sDataMode === "EDIT") {
+                    if (this._sActiveTable === "matTypeTab") { this.onSave('matType'); }
+                    else if (this._sActiveTable === "matClassTab") { this.onSave('matClass'); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onSave('matAttrib'); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onSave('batchControl'); }
+                }
+            },
+            
+            onCancel() {
+                if (this._sDataMode === "NEW" || this._sDataMode === "EDIT") {
+                    if (this._sActiveTable === "matTypeTab") { this.onCancelMatType(); }
+                    else if (this._sActiveTable === "matClassTab") { this.onCancelMatClass(); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onCancelMatAttrib(); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onCancelBatchControl(); }
+                }
+            },           
+
+            onRefresh() {
+                if (this._sDataMode === "READ") {
+                    if (this._sActiveTable === "matTypeTab") { this.onRefreshMatType(); }
+                    else if (this._sActiveTable === "matClassTab") { this.onRefreshMatClass(); }
+                    else if (this._sActiveTable === "matAttribTab") { this.onRefreshMatAttrib(); }
+                    else if (this._sActiveTable === "batchControlTab") { this.onRefreshBatchControl(); }
+                }
+            }, 
+
+            getResources: async function(oEvent) {
+                var oModel = _this.getOwnerComponent().getModel();
+                var promiseResult;
+                var oParam = {
+                    SBU: _this.getView().getModel("ui").getData().SBU,
+                    N_MatType: [],
+                    N_GMCRange: [],
+                    N_Process: [],
+                    N_ExcessMatType: [],
+                    N_UV: [],
+                    N_BOMAttrib: []                
+                }
+
+                promiseResult = new Promise((resolve, reject) => {
+                    oModel.create("/ResourceSet", oParam, {
+                        method: "POST",
+                        success: function (oData, oResponse) {
+                            // console.log(oData)
+                            _this.getView().setModel(new JSONModel(oData.N_MatType.results), "mattyp");
+                            _this.getView().setModel(new JSONModel(oData.N_GMCRange.results), "gmcnrkeycd");
+                            _this.getView().setModel(new JSONModel(oData.N_Process.results), "processcd");
+                            _this.getView().setModel(new JSONModel(oData.N_ExcessMatType.results), "excmattyp");
+                            _this.getView().setModel(new JSONModel(oData.N_UV.results), "usgcls");
+                            _this.getView().setModel(new JSONModel(oData.N_BOMAttrib.results), "bomatrb");
+                            resolve();
+                        },
+                        error: function (err) { 
+                            resolve();
+                        }
+                    })
+                });
+    
+                return await promiseResult;
+            },
+
+            onSBUChange: function(oEvent) {
+                console.log("sbu change")
+            },
+
+            _onMultiInputValidate: function(oArgs) {
+                var aToken = this._oMultiInput.getTokens();
+
+                if (oArgs.suggestionObject) {
+                    var oObject = oArgs.suggestionObject.getBindingContext("materialType").getObject(),
+                        oToken = new Token();
+
+                    oToken.setKey(oObject.MaterialType);
+                    oToken.setText(oObject.Description + " (" + oObject.MaterialType + ")");
+                    aToken.push(oToken)
+
+                    this._oMultiInput.setTokens(aToken);
+                    this._oMultiInput.setValueState("None");
+                }
+                else if (oArgs.text !== "") {
+                    this._oMultiInput.setValueState("Error");
+                }
+    
+                return null;
+            },
+
         });
     });
