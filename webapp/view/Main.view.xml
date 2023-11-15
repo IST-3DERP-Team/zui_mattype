@@ -29,7 +29,7 @@
                     </sfb:controlConfiguration>
 
                     <sfb:controlConfiguration>
-                        <sfb:ControlConfiguration id="filterMatType" key="MATTYP" groupId="_BASIC" label="{caption>/MATTYPE}" controlType="dropDownList" 
+                        <sfb:ControlConfiguration id="filterMatType" key="MATTYP" groupId="_BASIC" label="{caption>/MATTYPE}" preventInitialDataFetchInValueHelpDialog="false"
                             displayBehaviour="idAndDescription" mandatory="notMandatory" index="1">
                         </sfb:ControlConfiguration>
                     </sfb:controlConfiguration>
