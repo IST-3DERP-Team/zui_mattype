@@ -287,7 +287,7 @@ sap.ui.define([
             return oColumnTemplate;
         },
 
-        setRowReadMode(pModel) {
+        setRowReadMode(pModel, pFilters, pFilterGlobal, pFilterTab) {
             if (!_this._aColumns[pModel]) return;
 
             var oTable = this.byId(pModel + "Tab");
@@ -861,9 +861,9 @@ sap.ui.define([
             var aFilter = [];
             var aFilterGrp = [];
             var aFilterCol = [];
-
+            
             if (pFilters.length > 0 && pFilters[0].aFilters) {
-                console.log("pFilters", pFilters)
+                console.log("pFilters1", pFilters)
                 pFilters[0].aFilters.forEach(x => {
                     if (Object.keys(x).includes("aFilters")) {
                         x.aFilters.forEach(y => {
@@ -885,6 +885,7 @@ sap.ui.define([
                     }
                 });
             } else if (pFilters.length > 0) {
+                console.log("pFilters2", pFilters)
                 var sName = pFilters[0].sPath;
                 aFilter.push(new Filter(sName, FilterOperator.EQ,  pFilters[0].oValue1));
                 var oFilterGrp = new Filter(aFilter, false);
@@ -904,7 +905,6 @@ sap.ui.define([
             }
 
             oFilter = new Filter(aFilterGrp, true);
-
             this.byId(pModel + "Tab").getBinding("rows").filter(oFilter, "Application");
 
             // Filter by Table columns

@@ -2,6 +2,8 @@ sap.ui.define([
     "./BaseController",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageBox",
+    "sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
     "sap/m/Token",
     'sap/m/SearchField',
     'sap/ui/model/type/String',
@@ -9,7 +11,7 @@ sap.ui.define([
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (BaseController, JSONModel, MessageBox, Token, SearchField, typeString) {
+    function (BaseController, JSONModel, MessageBox, Filter, FilterOperator, Token, SearchField, typeString) {
         "use strict";
 
         var _this;
@@ -151,12 +153,39 @@ sap.ui.define([
             getMatType(pFilters, pFilterGlobal) {
                 _this.showLoadingDialog("Loading...");
 
+                var oSmartFilter = this.getView().byId("sfbMatType").getFilters();
+                var aFilters = [],
+                    aFilter = [],
+                    aCustomFilter = [],
+                    aSmartFilter = [];
+                    console.log("getTranPostHdr", oSmartFilter)
+                if (oSmartFilter.length > 0 && oSmartFilter[0].aFilters)  {
+                    oSmartFilter[0].aFilters.forEach(item => {
+                        // console.log(item)
+                        if (item.aFilters === undefined) {
+                            aFilter.push(new Filter(item.sPath, item.sOperator, item.oValue1));
+                        }
+                        else {
+                            aFilters.push(item);
+                        }
+                    })
+
+                    if (aFilter.length > 0) { aFilters.push(new Filter(aFilter, false)); }
+                }
+                else {
+                    var sName = pFilters[0].sPath;
+                    aFilters.push(new Filter(sName, FilterOperator.EQ, pFilters[0].oValue1));
+                }
+
+                aSmartFilter.push(new Filter(aFilters, true));
+
                 var oModel = this.getOwnerComponent().getModel();       
                 var oTable = _this.getView().byId("matTypeTab");
 
                 oModel.read('/MaterialTypeViewSet', {
+                    filters: aSmartFilter,
                     success: function (data, response) {
-                        //console.log("MaterialTypeViewSet", data)
+                        console.log("MaterialTypeViewSet", data)
                         if (data.results.length > 0) {
                             
                             data.results.forEach((item, index) => {
@@ -189,8 +218,7 @@ sap.ui.define([
                             oJSONModel.setData(data);
                             _this.getView().setModel(oJSONModel, "matType");
                             _this._tableRendered = "matTypeTab";
-
-                            _this.onFilterBySmart("matType", pFilters, pFilterGlobal, aFilterTab);
+                            //_this.onFilterBySmart("matType", pFilters, pFilterGlobal, aFilterTab);
 
                             _this.setRowReadMode("matType");
 
