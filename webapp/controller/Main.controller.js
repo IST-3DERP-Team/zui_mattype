@@ -26,7 +26,7 @@ sap.ui.define([
                 _this = this;
                 _this._sActiveTable = "matTypeTab";
                 _this._sDataMode = "READ";   
-                
+                _this.getAppAction();
                 _this.getCaption();
 
                 var oModel = this.getOwnerComponent().getModel("ZVB_3DERP_MATTYPE_FILTER_CDS");
@@ -125,7 +125,29 @@ sap.ui.define([
 
                 _this.closeLoadingDialog();
             },
+            getAppAction: async function () {
+                if (sap.ushell.Container !== undefined) {
+                    const fullHash = new HashChanger().getHash();
+                    const urlParsing = await sap.ushell.Container.getServiceAsync("URLParsing");
+                    const shellHash = urlParsing.parseShellHash(fullHash);
+                    const sAction = shellHash.action;
 
+                    this._appAction = sAction;
+
+                    if (sAction === "display") {
+                        this.byId("btnAddMatType").setVisible(false);
+                        this.byId("btnEditMatType").setVisible(false);
+                        this.byId("btnRemoveRowMatType").setVisible(false);
+                    }
+                    else {
+                        this.byId("btnAddMatType").setVisible(true);
+                        this.byId("btnEditMatType").setVisible(true);
+                        this.byId("btnRemoveRowMatType").setVisible(true);
+
+                        //btnRefreshMatType
+                    }
+                }
+            },
             onAfterTableRender(pTableId, pTableProps) {
                 //console.log("onAfterTableRendering", pTableId)
             },
