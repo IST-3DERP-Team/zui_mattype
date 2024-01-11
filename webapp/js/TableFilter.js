@@ -84,7 +84,7 @@ sap.ui.define([
             var oTableColumns = [];
             var aTableColumns = jQuery.extend(true, [], me._aColumns[sTableId.replace("Tab","")]);
             aTableColumns.forEach((col, idx) => {
-                if (!(col.ColumnName === "MANDT" || col.ColumnName === "DOCTYPE" || col.ColumnName === "SHORTTEXT" || col.ColumnName === "INFORECORD" || col.ColumnName === "COMPANY" || col.ColumnName === "CUSTGRP" || col.ColumnName === "PLANMONTH")) {
+                if (!(col.ColumnName === "MANDT" || col.ColumnName === "DOCTYPE" || col.ColumnName === "INFORECORD" || col.ColumnName === "COMPANY" || col.ColumnName === "CUSTGRP" || col.ColumnName === "PLANMONTH")) {
                     oTableColumns.push(col);
                 }
             });
