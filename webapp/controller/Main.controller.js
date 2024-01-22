@@ -497,27 +497,46 @@ sap.ui.define([
             },
 
             onTableResize(arg1, arg2) {
+                var oSplitter = this.byId("splitMain");
+                var oFirstPane = oSplitter.getRootPaneContainer().getPanes().at(0);
+                var oSecondPane = oSplitter.getRootPaneContainer().getPanes().at(1);
+
                 if (arg1 === "MatType") {
                     if (arg2 === "Max") {
-                        //this.byId("fixFlexMatType").setProperty("fixContentSize", "99%");
                         this.byId("btnFullScreenMatType").setVisible(false);
                         this.byId("btnExitFullScreenMatType").setVisible(true);
 
-                        this.getView().byId("matTypeTab").setVisible(true);
-                        this.getView().byId("itbDetail").setVisible(false);
+                        // this.getView().byId("matTypeTab").setVisible(true);
+                        // this.getView().byId("itbDetail").setVisible(false);
+
+                        this.byId("itbDetail").setVisible(false);
+                        var oLayoutData = new sap.ui.layout.SplitterLayoutData({
+                            size: "100%",
+                            resizable: false
+                        });
+                        oFirstPane.setLayoutData(oLayoutData);
+
+                        this.byId("vbMain").addStyleClass("onAddVboxHeight");
                     }
                     else {
-                        //this.byId("fixFlexMatType").setProperty("fixContentSize", "50%");
                         this.byId("btnFullScreenMatType").setVisible(true);
                         this.byId("btnExitFullScreenMatType").setVisible(false);
 
-                        this.getView().byId("matTypeTab").setVisible(true);
-                        this.getView().byId("itbDetail").setVisible(true);
+                        // this.getView().byId("matTypeTab").setVisible(true);
+                        // this.getView().byId("itbDetail").setVisible(true);
+
+                        this.byId("itbDetail").setVisible(true)
+                        var oLayoutData = new sap.ui.layout.SplitterLayoutData({
+                            size: "43%",
+                            resizable: true
+                        });
+                        oFirstPane.setLayoutData(oLayoutData);
+
+                        this.byId("vbMain").removeStyleClass("onAddVboxHeight");
                     }
                 }
                 else {
                     if (arg2 === "Max") {
-                        //this.byId("fixFlexMatType").setProperty("fixContentSize", "0%");
                         this.byId("btnFullScreenMatClass").setVisible(false);
                         this.byId("btnExitFullScreenMatClass").setVisible(true);
                         this.byId("btnFullScreenMatAttrib").setVisible(false);
@@ -525,11 +544,21 @@ sap.ui.define([
                         this.byId("btnFullScreenBatchControl").setVisible(false);
                         this.byId("btnExitFullScreenBatchControl").setVisible(true);
 
-                        this.getView().byId("matTypeTab").setVisible(false);
-                        this.getView().byId("itbDetail").setVisible(true);
+                        // this.getView().byId("matTypeTab").setVisible(false);
+                        // this.getView().byId("itbDetail").setVisible(true);
+
+                        this.byId("matTypeTab").setVisible(false);
+                        var oLayoutData = new sap.ui.layout.SplitterLayoutData({
+                            size: "100%",
+                            resizable: false
+                        });
+                        oSecondPane.setLayoutData(oLayoutData);
+
+                        this.byId("vbMain").addStyleClass("onAddVboxHeight");
+                        this.byId("itbDetail").removeStyleClass("detailSection");
+                        this.byId("itbDetail").addStyleClass("addDetailSection");
                     }
                     else {
-                        //this.byId("fixFlexMatType").setProperty("fixContentSize", "50%");
                         this.byId("btnFullScreenMatClass").setVisible(true);
                         this.byId("btnExitFullScreenMatClass").setVisible(false);
                         this.byId("btnFullScreenMatAttrib").setVisible(true);
@@ -537,8 +566,19 @@ sap.ui.define([
                         this.byId("btnFullScreenBatchControl").setVisible(true);
                         this.byId("btnExitFullScreenBatchControl").setVisible(false);
 
-                        this.getView().byId("matTypeTab").setVisible(true);
-                        this.getView().byId("itbDetail").setVisible(true);
+                        // this.getView().byId("matTypeTab").setVisible(true);
+                        // this.getView().byId("itbDetail").setVisible(true);
+
+                        this.byId("matTypeTab").setVisible(true);
+                        var oLayoutData = new sap.ui.layout.SplitterLayoutData({
+                            size: "57%",
+                            resizable: true
+                        });
+                        oSecondPane.setLayoutData(oLayoutData);
+
+                        this.byId("vbMain").removeStyleClass("onAddVboxHeight");
+                        this.byId("itbDetail").addStyleClass("detailSection");
+                        this.byId("itbDetail").removeStyleClass("addDetailSection");
                     }                    
                 }
             },

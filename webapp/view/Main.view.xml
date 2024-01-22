@@ -19,239 +19,331 @@
         </dependents>
         <content>
     
-            <VBox id="vbMain" fitContainer="true">
-                <sfb:SmartFilterBar id="sfbMatType" entitySet="ZVB_3DERP_MATTYPE_FILTER" enableBasicSearch="false" search="onSearch" 
-                    persistencyKey="3DERP_MatTypeKey" filterContainerWidth="14rem" useToolbar="true" showClearOnFB="true" initialise="onSFBInitialise">
-                    <sfb:controlConfiguration>
-                        <sfb:ControlConfiguration id="filterSbu" key="SBU" groupId="_BASIC" label="{caption>/SBU}" controlType="dropDownList" filterType="single"
-                            displayBehaviour="idOnly" mandatory="mandatory" index="0" change="onSBUChange">
-                        </sfb:ControlConfiguration>
-                    </sfb:controlConfiguration>
+            <sfb:SmartFilterBar id="sfbMatType" entitySet="ZVB_3DERP_MATTYPE_FILTER" enableBasicSearch="false" search="onSearch" 
+                persistencyKey="3DERP_MatTypeKey" filterContainerWidth="14rem" useToolbar="true" showClearOnFB="true" initialise="onSFBInitialise">
+                <sfb:controlConfiguration>
+                    <sfb:ControlConfiguration id="filterSbu" key="SBU" groupId="_BASIC" label="{caption>/SBU}" controlType="dropDownList" filterType="single"
+                        displayBehaviour="idOnly" mandatory="mandatory" index="0" change="onSBUChange">
+                    </sfb:ControlConfiguration>
+                </sfb:controlConfiguration>
 
-                    <sfb:controlConfiguration>
-                        <sfb:ControlConfiguration id="filterMatType" key="MATTYP" groupId="_BASIC" label="{caption>/MATTYPE}" preventInitialDataFetchInValueHelpDialog="false"
-                            displayBehaviour="idAndDescription" mandatory="notMandatory" index="1">
-                        </sfb:ControlConfiguration>
-                    </sfb:controlConfiguration>
+                <sfb:controlConfiguration>
+                    <sfb:ControlConfiguration id="filterMatType" key="MATTYP" groupId="_BASIC" label="{caption>/MATTYPE}" preventInitialDataFetchInValueHelpDialog="false"
+                        displayBehaviour="idAndDescription" mandatory="notMandatory" index="1">
+                    </sfb:ControlConfiguration>
+                </sfb:controlConfiguration>
 
-                    <!-- <sfb:controlConfiguration>
-                        <sfb:ControlConfiguration id="filterMatType" key="MATTYP" label="{caption>/MATTYPE}" groupId="_BASIC" preventInitialDataFetchInValueHelpDialog="false" width="15rem" >
-                            <sfb:customControl>
-                                <MultiInput id="multiInputMatTyp"
-                                    change="onCustomSmartFilterValueHelpChange"
-                                    valueHelpRequest=".onCustomSmartFilterValueHelp"
-                                    maxSuggestionWidth="350px"
-                                    suggestionRows="{
-                                        path: 'materialType>/results',
-                                        sorter: { path: 'MaterialType' },
-                                        length: 1000,
-                                        templateShareable: false
-                                    }">
-                                    <suggestionColumns>
-                                        <Column width="100px">
-                                            <Label text="Material Type"/>
-                                        </Column>
-                                        <Column width="200px">
-                                            <Label text="Description"/>
-                                        </Column>
-                                    </suggestionColumns>
-                                    <suggestionRows>
-                                        <ColumnListItem>
-                                            <cells>
-                                                <Label text="{materialType>MaterialType}" />
-                                                <Label text="{materialType>Description}" />
-                                            </cells>
-                                        </ColumnListItem>
-                                    </suggestionRows>
-                                </MultiInput>
-                            </sfb:customControl>
-                        </sfb:ControlConfiguration>
-                    </sfb:controlConfiguration> -->
+                <!-- <sfb:controlConfiguration>
+                    <sfb:ControlConfiguration id="filterMatType" key="MATTYP" label="{caption>/MATTYPE}" groupId="_BASIC" preventInitialDataFetchInValueHelpDialog="false" width="15rem" >
+                        <sfb:customControl>
+                            <MultiInput id="multiInputMatTyp"
+                                change="onCustomSmartFilterValueHelpChange"
+                                valueHelpRequest=".onCustomSmartFilterValueHelp"
+                                maxSuggestionWidth="350px"
+                                suggestionRows="{
+                                    path: 'materialType>/results',
+                                    sorter: { path: 'MaterialType' },
+                                    length: 1000,
+                                    templateShareable: false
+                                }">
+                                <suggestionColumns>
+                                    <Column width="100px">
+                                        <Label text="Material Type"/>
+                                    </Column>
+                                    <Column width="200px">
+                                        <Label text="Description"/>
+                                    </Column>
+                                </suggestionColumns>
+                                <suggestionRows>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Label text="{materialType>MaterialType}" />
+                                            <Label text="{materialType>Description}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </suggestionRows>
+                            </MultiInput>
+                        </sfb:customControl>
+                    </sfb:ControlConfiguration>
+                </sfb:controlConfiguration> -->
 
-                    <sfb:layoutData>
-                        <FlexItemData shrinkFactor="0"/>
-                    </sfb:layoutData>
-                </sfb:SmartFilterBar>
-            
-                <uiT:Table id="matTypeTab"
-                    class="tablePadding"
-                    rows="{matType>/results}"
-                    visibleRowCountMode="Auto"
-                    showColumnVisibilityMenu="true"
-                    enableColumnFreeze="true"
-                    enableCellFilter="true"
-                    selectionMode="MultiToggle"
-                    firstVisibleRowChanged="onFirstVisibleRowChanged"
-                    cellClick="onCellClickMatType"
-                    sort="onSorted"
-                    filter="onFilter"
-                    columnFreeze="onColumnUpdated"
-                    columnMove="onColumnUpdated"
-                    columnResize="onColumnUpdated"
-                    columnSelect="onColumnUpdated"
-                    columnVisibility="onColumnUpdated"
-                    rowSelectionChange="onRowSelectionChangeMatType">
-                    <uiT:rowSettingsTemplate>
-                        <uiT:RowSettings highlight="{= ${matType>Edited} === true ? 'Warning' : null}" />
-                    </uiT:rowSettingsTemplate>
-                    <uiT:extension>
-                        <OverflowToolbar>
-                            <Text text="{ui>/rowCountMatType} {caption>/MATTYPE}" class="selHdrKeyFontStyle" />
-                            <ToolbarSpacer/>
-                            <Button id="btnAddMatType" 
-                                icon="sap-icon://add"
-                                press="onCreateMatType"
-                                visible="true"/>
-                            <Button id="btnEditMatType" 
-                                icon="sap-icon://edit"
-                                press="onEditMatType"
-                                tooltip="Edit"
-                                visible="true"/>
-                            <Button id="btnAddRowMatType" 
-                                icon="sap-icon://add"
-                                press="onAddRow('matType')"
-                                visible="false" />
-                            <Button id="btnRemoveRowMatType" 
-                                icon="sap-icon://less"
-                                press="onRemoveRow('matType')"
-                                visible="false" />
-                            <Button id="btnSaveMatType" 
-                                icon="sap-icon://save"
-                                press=".onSave('matType')" 
-                                visible="false" />
-                            <Button id="btnCancelMatType" 
-                                icon="sap-icon://sys-cancel"
-                                press="onCancelMatType" 
-                                visible="false" />                                        
-                            <Button id="btnDeleteMatType" 
-                                icon="sap-icon://delete"
-                                press="onDeleteMatType"
-                                visible="true"/>
-                            <Button id="btnRefreshMatType" 
-                                icon="sap-icon://refresh"
-                                press="onRefreshMatType"
-                                visible="true"/> 
-                            <Button id="btnFullScreenMatType" 
-                                icon="sap-icon://full-screen"
-                                press="onTableResize('MatType','Max')"
-                                visible="true" />
-                            <Button id="btnExitFullScreenMatType" 
-                                icon="sap-icon://exit-full-screen"
-                                press="onTableResize('MatType','Min')"
-                                visible="false" />
-                            <Button id="btnTabLayoutMatType"
-                                icon="sap-icon://grid" 
-                                tooltip="{caption>/SAVELAYOUT}" 
-                                press="onSaveTableLayout"
-                                visible="true" />
-                        </OverflowToolbar>
-                    </uiT:extension>
-                    <uiT:layoutData>
-                        <FlexItemData id="fidHeader" growFactor="1" baseSize="0%"/>
-                    </uiT:layoutData>
-                </uiT:Table>
-                
-                <IconTabBar id="itbDetail" 
-                    headerMode="Inline"
-                    expanded="{device>/isNoPhone}" 
-                    expandable="false" 
-                    class="sapUiNoContentPadding" 
-                    stretchContentHeight="true" 
-                    applyContentPadding="false"
-                    select="onTabSelect">
-                    <items>
-                        <IconTabFilter id="itfMatClass" text="Material Classification" key="matClass">
-                            <IconTabBar id="itbMatClass" 
+                <sfb:layoutData>
+                    <FlexItemData growFactor="0"/>
+                </sfb:layoutData>
+            </sfb:SmartFilterBar>
+
+
+            <VBox id="vbMain" fitContainer="true" class="sidePadding vboxHeight">
+                <uiL:ResponsiveSplitter id="splitMain" defaultPane="default">
+                    <uiL:PaneContainer orientation="Vertical">
+                        <uiL:SplitPane requiredParentWidth="800">
+                            <uiT:Table id="matTypeTab"
+                                class="sapUiTinyMarginBottom sapUiTinyMarginBegin sapUiTinyMarginEnd"
+                                rows="{matType>/results}"
+                                visibleRowCountMode="Auto"
+                                showColumnVisibilityMenu="true"
+                                enableColumnFreeze="true"
+                                enableCellFilter="true"
+                                selectionMode="MultiToggle"
+                                firstVisibleRowChanged="onFirstVisibleRowChanged"
+                                cellClick="onCellClickMatType"
+                                sort="onSorted"
+                                filter="onFilter"
+                                columnFreeze="onColumnUpdated"
+                                columnMove="onColumnUpdated"
+                                columnResize="onColumnUpdated"
+                                columnSelect="onColumnUpdated"
+                                columnVisibility="onColumnUpdated"
+                                rowSelectionChange="onRowSelectionChangeMatType">
+                                <uiT:rowSettingsTemplate>
+                                    <uiT:RowSettings highlight="{= ${matType>Edited} === true ? 'Warning' : null}" />
+                                </uiT:rowSettingsTemplate>
+                                <uiT:extension>
+                                    <OverflowToolbar>
+                                        <Text text="{ui>/rowCountMatType} {caption>/MATTYPE}" class="selHdrKeyFontStyle" />
+                                        <ToolbarSpacer/>
+                                        <Button id="btnAddMatType" 
+                                            icon="sap-icon://add"
+                                            press="onCreateMatType"
+                                            visible="true"/>
+                                        <Button id="btnEditMatType" 
+                                            icon="sap-icon://edit"
+                                            press="onEditMatType"
+                                            tooltip="Edit"
+                                            visible="true"/>
+                                        <Button id="btnAddRowMatType" 
+                                            icon="sap-icon://add"
+                                            press="onAddRow('matType')"
+                                            visible="false" />
+                                        <Button id="btnRemoveRowMatType" 
+                                            icon="sap-icon://less"
+                                            press="onRemoveRow('matType')"
+                                            visible="false" />
+                                        <Button id="btnSaveMatType" 
+                                            icon="sap-icon://save"
+                                            press=".onSave('matType')" 
+                                            visible="false" />
+                                        <Button id="btnCancelMatType" 
+                                            icon="sap-icon://sys-cancel"
+                                            press="onCancelMatType" 
+                                            visible="false" />                                        
+                                        <Button id="btnDeleteMatType" 
+                                            icon="sap-icon://delete"
+                                            press="onDeleteMatType"
+                                            visible="true"/>
+                                        <Button id="btnRefreshMatType" 
+                                            icon="sap-icon://refresh"
+                                            press="onRefreshMatType"
+                                            visible="true"/> 
+                                        <Button id="btnFullScreenMatType" 
+                                            icon="sap-icon://full-screen"
+                                            press="onTableResize('MatType','Max')"
+                                            visible="true" />
+                                        <Button id="btnExitFullScreenMatType" 
+                                            icon="sap-icon://exit-full-screen"
+                                            press="onTableResize('MatType','Min')"
+                                            visible="false" />
+                                        <Button id="btnTabLayoutMatType"
+                                            icon="sap-icon://grid" 
+                                            tooltip="{caption>/SAVELAYOUT}" 
+                                            press="onSaveTableLayout"
+                                            visible="true" />
+                                    </OverflowToolbar>
+                                </uiT:extension>
+                                <uiT:layoutData>
+                                    <FlexItemData id="fidHeader" growFactor="1" baseSize="0%"/>
+                                </uiT:layoutData>
+                            </uiT:Table>
+                            <uiL:layoutData>
+                                <uiL:SplitterLayoutData size="43%"/>
+                            </uiL:layoutData>
+                        </uiL:SplitPane>
+                        <uiL:SplitPane  requiredParentWidth="800">
+                            <IconTabBar id="itbDetail" 
                                 headerMode="Inline"
                                 expanded="{device>/isNoPhone}" 
                                 expandable="false" 
-                                class="sapUiNoContentPadding" 
+                                class="detailSection" 
                                 stretchContentHeight="true" 
                                 applyContentPadding="false"
                                 select="onTabSelect">
                                 <items>
-                                    <IconTabFilter id="itfMatClassDetail" text="Material Classification" key="matClass">
-                                        <uiT:Table id="matClassTab"
-                                            class="tablePadding"
-                                            rows="{matClass>/results}"
-                                            visibleRowCountMode="Auto"
-                                            showColumnVisibilityMenu="true"
-                                            enableColumnFreeze="true"
-                                            enableCellFilter="true"
-                                            selectionMode="Single"
-                                            selectionBehavior="RowSelector"
-                                            firstVisibleRowChanged="onFirstVisibleRowChanged"
-                                            cellClick="onCellClickMatClass"
-                                            sort="onSorted"
-                                            filter="onFilter"
-                                            columnFreeze="onColumnUpdated"
-                                            columnMove="onColumnUpdated"
-                                            columnResize="onColumnUpdated"
-                                            columnSelect="onColumnUpdated"
-                                            columnVisibility="onColumnUpdated">
-                                            <uiT:rowSettingsTemplate>
-                                                <uiT:RowSettings highlight="{= ${matClass>Edited} === true ? 'Warning' : null}" />
-                                            </uiT:rowSettingsTemplate>
-                                            <uiT:extension>
-                                                <OverflowToolbar>
-                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType} ( {ui>/rowCountMatClass} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
-                                                    <!-- <ToolbarSeparator/>
-                                                    <Text text="{ui>/rowCountMatClass} {caption>/ITEMS}" /> -->
-                                                    <ToolbarSpacer/>
-                                                    <Button id="btnAddMatClass" 
-                                                        icon="sap-icon://add"
-                                                        press="onCreateMatClass"
-                                                        visible="true"/>
-                                                    <Button id="btnEditMatClass" 
-                                                        icon="sap-icon://edit"
-                                                        press="onEditMatClass"
-                                                        tooltip="Edit"
-                                                        visible="true"/>
-                                                    <Button id="btnAddRowMatClass" 
-                                                        icon="sap-icon://add"
-                                                        press="onAddRow('matClass')"
-                                                        visible="false" />
-                                                    <Button id="btnRemoveRowMatClass" 
-                                                        icon="sap-icon://less"
-                                                        press="onRemoveRow('matClass')"
-                                                        visible="false" />
-                                                    <Button id="btnSaveMatClass" 
-                                                        icon="sap-icon://save"
-                                                        press="onSave('matClass')"
-                                                        visible="false" />
-                                                    <Button id="btnCancelMatClass" 
-                                                        icon="sap-icon://sys-cancel"
-                                                        press="onCancelMatClass" 
-                                                        visible="false" />                                        
-                                                    <Button id="btnDeleteMatClass" 
-                                                        icon="sap-icon://delete"
-                                                        press="onDeleteMatClass"
-                                                        visible="true"/>
-                                                    <Button id="btnRefreshMatClass" 
-                                                        icon="sap-icon://refresh"
-                                                        press="onRefreshMatClass"
-                                                        visible="true"/> 
-                                                    <Button id="btnFullScreenMatClass" 
-                                                        icon="sap-icon://full-screen"
-                                                        press="onTableResize('MatClass','Max')"
-                                                        visible="true" />
-                                                    <Button id="btnExitFullScreenMatClass" 
-                                                        icon="sap-icon://exit-full-screen"
-                                                        press="onTableResize('MatClass','Min')"
-                                                        visible="false" />
-                                                    <Button id="btnTabLayoutMatClass"
-                                                        icon="sap-icon://grid" 
-                                                        tooltip="{caption>/SAVELAYOUT}" 
-                                                        press="onSaveTableLayout"
-                                                        visible="true" />
-                                                </OverflowToolbar>
-                                            </uiT:extension>
-                                        </uiT:Table>
+                                    <IconTabFilter id="itfMatClass" text="Material Classification" key="matClass">
+                                        <IconTabBar id="itbMatClass" 
+                                            headerMode="Inline"
+                                            expanded="{device>/isNoPhone}" 
+                                            expandable="false" 
+                                            class="" 
+                                            stretchContentHeight="true" 
+                                            applyContentPadding="false"
+                                            select="onTabSelect">
+                                            <items>
+                                                <IconTabFilter id="itfMatClassDetail" text="Material Classification" key="matClass">
+                                                    <uiT:Table id="matClassTab"
+                                                        class="sapUiTinyMarginBottom sapUiTinyMarginBegin sapUiTinyMarginEnd"
+                                                        rows="{matClass>/results}"
+                                                        visibleRowCountMode="Auto"
+                                                        showColumnVisibilityMenu="true"
+                                                        enableColumnFreeze="true"
+                                                        enableCellFilter="true"
+                                                        selectionMode="Single"
+                                                        selectionBehavior="RowSelector"
+                                                        firstVisibleRowChanged="onFirstVisibleRowChanged"
+                                                        cellClick="onCellClickMatClass"
+                                                        sort="onSorted"
+                                                        filter="onFilter"
+                                                        columnFreeze="onColumnUpdated"
+                                                        columnMove="onColumnUpdated"
+                                                        columnResize="onColumnUpdated"
+                                                        columnSelect="onColumnUpdated"
+                                                        columnVisibility="onColumnUpdated">
+                                                        <uiT:rowSettingsTemplate>
+                                                            <uiT:RowSettings highlight="{= ${matClass>Edited} === true ? 'Warning' : null}" />
+                                                        </uiT:rowSettingsTemplate>
+                                                        <uiT:extension>
+                                                            <OverflowToolbar>
+                                                                <Text text="{caption>/MATTYPE}: {ui>/activeMatType} ( {ui>/rowCountMatClass} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                                                <!-- <ToolbarSeparator/>
+                                                                <Text text="{ui>/rowCountMatClass} {caption>/ITEMS}" /> -->
+                                                                <ToolbarSpacer/>
+                                                                <Button id="btnAddMatClass" 
+                                                                    icon="sap-icon://add"
+                                                                    press="onCreateMatClass"
+                                                                    visible="true"/>
+                                                                <Button id="btnEditMatClass" 
+                                                                    icon="sap-icon://edit"
+                                                                    press="onEditMatClass"
+                                                                    tooltip="Edit"
+                                                                    visible="true"/>
+                                                                <Button id="btnAddRowMatClass" 
+                                                                    icon="sap-icon://add"
+                                                                    press="onAddRow('matClass')"
+                                                                    visible="false" />
+                                                                <Button id="btnRemoveRowMatClass" 
+                                                                    icon="sap-icon://less"
+                                                                    press="onRemoveRow('matClass')"
+                                                                    visible="false" />
+                                                                <Button id="btnSaveMatClass" 
+                                                                    icon="sap-icon://save"
+                                                                    press="onSave('matClass')"
+                                                                    visible="false" />
+                                                                <Button id="btnCancelMatClass" 
+                                                                    icon="sap-icon://sys-cancel"
+                                                                    press="onCancelMatClass" 
+                                                                    visible="false" />                                        
+                                                                <Button id="btnDeleteMatClass" 
+                                                                    icon="sap-icon://delete"
+                                                                    press="onDeleteMatClass"
+                                                                    visible="true"/>
+                                                                <Button id="btnRefreshMatClass" 
+                                                                    icon="sap-icon://refresh"
+                                                                    press="onRefreshMatClass"
+                                                                    visible="true"/> 
+                                                                <Button id="btnFullScreenMatClass" 
+                                                                    icon="sap-icon://full-screen"
+                                                                    press="onTableResize('MatClass','Max')"
+                                                                    visible="true" />
+                                                                <Button id="btnExitFullScreenMatClass" 
+                                                                    icon="sap-icon://exit-full-screen"
+                                                                    press="onTableResize('MatClass','Min')"
+                                                                    visible="false" />
+                                                                <Button id="btnTabLayoutMatClass"
+                                                                    icon="sap-icon://grid" 
+                                                                    tooltip="{caption>/SAVELAYOUT}" 
+                                                                    press="onSaveTableLayout"
+                                                                    visible="true" />
+                                                            </OverflowToolbar>
+                                                        </uiT:extension>
+                                                    </uiT:Table>
+                                                </IconTabFilter>
+                                                <IconTabFilter id="itfMatAttrib" text="{caption>/MATATTRIB}" key="matAttrib">
+                                                    <uiT:Table id="matAttribTab"
+                                                        class="sapUiTinyMarginBottom sapUiTinyMarginBegin sapUiTinyMarginEnd"
+                                                        rows="{matAttrib>/results}"
+                                                        visibleRowCountMode="Auto"
+                                                        showColumnVisibilityMenu="true"
+                                                        enableColumnFreeze="true"
+                                                        enableCellFilter="true"
+                                                        selectionMode="Single"
+                                                        selectionBehavior="RowSelector"
+                                                        firstVisibleRowChanged="onFirstVisibleRowChanged"
+                                                        cellClick="onCellClickMatAttrib"
+                                                        sort="onSorted"
+                                                        filter="onFilter"
+                                                        columnFreeze="onColumnUpdated"
+                                                        columnMove="onColumnUpdated"
+                                                        columnResize="onColumnUpdated"
+                                                        columnSelect="onColumnUpdated"
+                                                        columnVisibility="onColumnUpdated">
+                                                        <uiT:rowSettingsTemplate>
+                                                            <uiT:RowSettings highlight="{= ${matAttrib>Edited} === true ? 'Warning' : null}" />
+                                                        </uiT:rowSettingsTemplate>
+                                                        <uiT:extension>
+                                                            <OverflowToolbar>
+                                                                <Text text="{caption>/MATTYPE}: {ui>/activeMatType}, {caption>/MATTYPCLS}: {ui>/activeMatClass} ( {ui>/rowCountMatAttrib} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                                                <!-- <ToolbarSeparator/>
+                                                                <Text text="{ui>/rowCountMatAttrib} {caption>/ITEMS}" /> -->
+                                                                <ToolbarSpacer/>
+                                                                <Button id="btnAddMatAttrib" 
+                                                                    icon="sap-icon://add"
+                                                                    press="onCreateMatAttrib"
+                                                                    visible="true"/>
+                                                                <Button id="btnEditMatAttrib" 
+                                                                    icon="sap-icon://edit"
+                                                                    press="onEditMatAttrib"
+                                                                    tooltip="Edit"
+                                                                    visible="true"/>
+                                                                <Button id="btnAddRowMatAttrib" 
+                                                                    icon="sap-icon://add"
+                                                                    press="onAddRow('matAttrib')"
+                                                                    visible="false" />
+                                                                <Button id="btnRemoveRowMatAttrib" 
+                                                                    icon="sap-icon://less"
+                                                                    press="onRemoveRow('matAttrib')"
+                                                                    visible="false" />
+                                                                <Button id="btnSaveMatAttrib" 
+                                                                    icon="sap-icon://save"
+                                                                    press="onSave('matAttrib')"
+                                                                    visible="false" />
+                                                                <Button id="btnCancelMatAttrib" 
+                                                                    icon="sap-icon://sys-cancel"
+                                                                    press="onCancelMatAttrib" 
+                                                                    visible="false" />                                        
+                                                                <Button id="btnDeleteMatAttrib" 
+                                                                    icon="sap-icon://delete"
+                                                                    press="onDeleteMatAttrib"
+                                                                    visible="true"/>
+                                                                <Button id="btnRefreshMatAttrib" 
+                                                                    icon="sap-icon://refresh"
+                                                                    press="onRefreshMatAttrib"
+                                                                    visible="true"/> 
+                                                                <Button id="btnFullScreenMatAttrib" 
+                                                                    icon="sap-icon://full-screen"
+                                                                    press="onTableResize('MatAttrib','Max')"
+                                                                    visible="true" />
+                                                                <Button id="btnExitFullScreenMatAttrib" 
+                                                                    icon="sap-icon://exit-full-screen"
+                                                                    press="onTableResize('MatAttrib','Min')"
+                                                                    visible="false" />
+                                                                <Button id="btnTabLayoutMatAttrib"
+                                                                    icon="sap-icon://grid" 
+                                                                    tooltip="{caption>/SAVELAYOUT}" 
+                                                                    press="onSaveTableLayout"
+                                                                    visible="true" />
+                                                            </OverflowToolbar>
+                                                        </uiT:extension>
+                                                    </uiT:Table>
+                                                </IconTabFilter>
+                                            </items>
+                                            <layoutData>
+                                                <FlexItemData id="fidDetail" growFactor="1" baseSize="0%"/>
+                                            </layoutData>
+                                        </IconTabBar>
                                     </IconTabFilter>
-                                    <IconTabFilter id="itfMatAttrib" text="{caption>/MATATTRIB}" key="matAttrib">
-                                        <uiT:Table id="matAttribTab"
-                                            class="tablePadding"
-                                            rows="{matAttrib>/results}"
+                                    <IconTabFilter id="itfBatchCtrl" text="{caption>/BATCHCTRL}" key="batchControl">
+                                        <uiT:Table id="batchControlTab"
+                                            class="sapUiTinyMarginBottom sapUiTinyMarginBegin sapUiTinyMarginEnd"
+                                            rows="{batchControl>/results}"
                                             visibleRowCountMode="Auto"
                                             showColumnVisibilityMenu="true"
                                             enableColumnFreeze="true"
@@ -259,7 +351,7 @@
                                             selectionMode="Single"
                                             selectionBehavior="RowSelector"
                                             firstVisibleRowChanged="onFirstVisibleRowChanged"
-                                            cellClick="onCellClickMatAttrib"
+                                            cellClick="onCellClickBatchControl"
                                             sort="onSorted"
                                             filter="onFilter"
                                             columnFreeze="onColumnUpdated"
@@ -268,56 +360,56 @@
                                             columnSelect="onColumnUpdated"
                                             columnVisibility="onColumnUpdated">
                                             <uiT:rowSettingsTemplate>
-                                                <uiT:RowSettings highlight="{= ${matAttrib>Edited} === true ? 'Warning' : null}" />
+                                                <uiT:RowSettings highlight="{= ${batchControl>Edited} === true ? 'Warning' : null}" />
                                             </uiT:rowSettingsTemplate>
                                             <uiT:extension>
                                                 <OverflowToolbar>
-                                                    <Text text="{caption>/MATTYPE}: {ui>/activeMatType}, {caption>/MATTYPCLS}: {ui>/activeMatClass} ( {ui>/rowCountMatAttrib} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
+                                                    <Text text="Material Type: {ui>/activeMatType} ( {ui>/rowCountBatchControl} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
                                                     <!-- <ToolbarSeparator/>
-                                                    <Text text="{ui>/rowCountMatAttrib} {caption>/ITEMS}" /> -->
+                                                    <Text text="{ui>/rowCountBatchControl} {caption>/ITEMS}" /> -->
                                                     <ToolbarSpacer/>
-                                                    <Button id="btnAddMatAttrib" 
+                                                    <Button id="btnAddBatchControl" 
                                                         icon="sap-icon://add"
-                                                        press="onCreateMatAttrib"
+                                                        press="onCreateBatchControl"
                                                         visible="true"/>
-                                                    <Button id="btnEditMatAttrib" 
+                                                    <Button id="btnEditBatchControl" 
                                                         icon="sap-icon://edit"
-                                                        press="onEditMatAttrib"
+                                                        press="onEditBatchControl"
                                                         tooltip="Edit"
                                                         visible="true"/>
-                                                    <Button id="btnAddRowMatAttrib" 
+                                                    <Button id="btnAddRowBatchControl" 
                                                         icon="sap-icon://add"
-                                                        press="onAddRow('matAttrib')"
+                                                        press="onAddRow('batchControl')"
                                                         visible="false" />
-                                                    <Button id="btnRemoveRowMatAttrib" 
+                                                    <Button id="btnRemoveRowBatchControl" 
                                                         icon="sap-icon://less"
-                                                        press="onRemoveRow('matAttrib')"
+                                                        press="onRemoveRow('batchControl')"
                                                         visible="false" />
-                                                    <Button id="btnSaveMatAttrib" 
+                                                    <Button id="btnSaveBatchControl" 
                                                         icon="sap-icon://save"
-                                                        press="onSave('matAttrib')"
+                                                        press="onSave('batchControl')"
                                                         visible="false" />
-                                                    <Button id="btnCancelMatAttrib" 
+                                                    <Button id="btnCancelBatchControl" 
                                                         icon="sap-icon://sys-cancel"
-                                                        press="onCancelMatAttrib" 
+                                                        press="onCancelBatchControl" 
                                                         visible="false" />                                        
-                                                    <Button id="btnDeleteMatAttrib" 
+                                                    <Button id="btnDeleteBatchControl" 
                                                         icon="sap-icon://delete"
-                                                        press="onDeleteMatAttrib"
+                                                        press="onDeleteBatchControl"
                                                         visible="true"/>
-                                                    <Button id="btnRefreshMatAttrib" 
+                                                    <Button id="btnRefreshBatchControl" 
                                                         icon="sap-icon://refresh"
-                                                        press="onRefreshMatAttrib"
+                                                        press="onRefreshBatchControl"
                                                         visible="true"/> 
-                                                    <Button id="btnFullScreenMatAttrib" 
+                                                    <Button id="btnFullScreenBatchControl" 
                                                         icon="sap-icon://full-screen"
-                                                        press="onTableResize('MatAttrib','Max')"
+                                                        press="onTableResize('BatchControl','Max')"
                                                         visible="true" />
-                                                    <Button id="btnExitFullScreenMatAttrib" 
+                                                    <Button id="btnExitFullScreenBatchControl" 
                                                         icon="sap-icon://exit-full-screen"
-                                                        press="onTableResize('MatAttrib','Min')"
+                                                        press="onTableResize('BatchControl','Min')"
                                                         visible="false" />
-                                                    <Button id="btnTabLayoutMatAttrib"
+                                                    <Button id="btnTabLayoutBatchControl"
                                                         icon="sap-icon://grid" 
                                                         tooltip="{caption>/SAVELAYOUT}" 
                                                         press="onSaveTableLayout"
@@ -327,91 +419,16 @@
                                         </uiT:Table>
                                     </IconTabFilter>
                                 </items>
+                                <layoutData>
+                                    <FlexItemData id="fidDetail2" growFactor="1" baseSize="0%"/>
+                                </layoutData>
                             </IconTabBar>
-                        </IconTabFilter>
-                        <IconTabFilter id="itfBatchCtrl" text="{caption>/BATCHCTRL}" key="batchControl">
-                            <uiT:Table id="batchControlTab"
-                                class="tablePadding"
-                                rows="{batchControl>/results}"
-                                visibleRowCountMode="Auto"
-                                showColumnVisibilityMenu="true"
-                                enableColumnFreeze="true"
-                                enableCellFilter="true"
-                                selectionMode="Single"
-                                selectionBehavior="RowSelector"
-                                firstVisibleRowChanged="onFirstVisibleRowChanged"
-                                cellClick="onCellClickBatchControl"
-                                sort="onSorted"
-                                filter="onFilter"
-                                columnFreeze="onColumnUpdated"
-                                columnMove="onColumnUpdated"
-                                columnResize="onColumnUpdated"
-                                columnSelect="onColumnUpdated"
-                                columnVisibility="onColumnUpdated">
-                                <uiT:rowSettingsTemplate>
-                                    <uiT:RowSettings highlight="{= ${batchControl>Edited} === true ? 'Warning' : null}" />
-                                </uiT:rowSettingsTemplate>
-                                <uiT:extension>
-                                    <OverflowToolbar>
-                                        <Text text="Material Type: {ui>/activeMatType} ( {ui>/rowCountBatchControl} {caption>/ITEMS} )" class="selHdrKeyFontStyle" />
-                                        <!-- <ToolbarSeparator/>
-                                        <Text text="{ui>/rowCountBatchControl} {caption>/ITEMS}" /> -->
-                                        <ToolbarSpacer/>
-                                        <Button id="btnAddBatchControl" 
-                                            icon="sap-icon://add"
-                                            press="onCreateBatchControl"
-                                            visible="true"/>
-                                        <Button id="btnEditBatchControl" 
-                                            icon="sap-icon://edit"
-                                            press="onEditBatchControl"
-                                            tooltip="Edit"
-                                            visible="true"/>
-                                        <Button id="btnAddRowBatchControl" 
-                                            icon="sap-icon://add"
-                                            press="onAddRow('batchControl')"
-                                            visible="false" />
-                                        <Button id="btnRemoveRowBatchControl" 
-                                            icon="sap-icon://less"
-                                            press="onRemoveRow('batchControl')"
-                                            visible="false" />
-                                        <Button id="btnSaveBatchControl" 
-                                            icon="sap-icon://save"
-                                            press="onSave('batchControl')"
-                                            visible="false" />
-                                        <Button id="btnCancelBatchControl" 
-                                            icon="sap-icon://sys-cancel"
-                                            press="onCancelBatchControl" 
-                                            visible="false" />                                        
-                                        <Button id="btnDeleteBatchControl" 
-                                            icon="sap-icon://delete"
-                                            press="onDeleteBatchControl"
-                                            visible="true"/>
-                                        <Button id="btnRefreshBatchControl" 
-                                            icon="sap-icon://refresh"
-                                            press="onRefreshBatchControl"
-                                            visible="true"/> 
-                                        <Button id="btnFullScreenBatchControl" 
-                                            icon="sap-icon://full-screen"
-                                            press="onTableResize('BatchControl','Max')"
-                                            visible="true" />
-                                        <Button id="btnExitFullScreenBatchControl" 
-                                            icon="sap-icon://exit-full-screen"
-                                            press="onTableResize('BatchControl','Min')"
-                                            visible="false" />
-                                        <Button id="btnTabLayoutBatchControl"
-                                            icon="sap-icon://grid" 
-                                            tooltip="{caption>/SAVELAYOUT}" 
-                                            press="onSaveTableLayout"
-                                            visible="true" />
-                                    </OverflowToolbar>
-                                </uiT:extension>
-                            </uiT:Table>
-                        </IconTabFilter>
-                    </items>
-                    <layoutData>
-                        <FlexItemData id="fidDetail" growFactor="1" baseSize="0%"/>
-                    </layoutData>
-                </IconTabBar>
+                            <uiL:layoutData>
+                                <uiL:SplitterLayoutData size="57%"/>
+                            </uiL:layoutData>
+                        </uiL:SplitPane>
+                    </uiL:PaneContainer>
+                </uiL:ResponsiveSplitter>
             </VBox>
         </content>
     </Page>

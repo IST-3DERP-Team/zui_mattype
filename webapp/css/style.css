@@ -149,3 +149,34 @@
 .selHdrKeyFontStyle {
     font-style: italic;
 }
+
+.vboxHeight > .sapMFlexItem {
+    height: 100%;
+}
+/* .sapMFlexItem{
+    height: 100%;
+} */
+.vboxHeight {
+    height: 85%;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.onAddVboxHeight {
+    height: 100%;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.detailSection {
+    position: relative;
+}
+
+.addDetailSection {
+    position: absolute;
+    height: 100%;
+}
+
+.sidePadding {
+    padding: 0 0.5rem;
+}
