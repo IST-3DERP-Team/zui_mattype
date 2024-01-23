@@ -919,9 +919,13 @@ sap.ui.define([
                 _this.byId("btnCancelMatAttrib").setVisible(false);
                 _this.byId("btnDeleteMatAttrib").setVisible(true);
                 _this.byId("btnRefreshMatAttrib").setVisible(true);
-                _this.byId("btnFullScreenMatAttrib").setVisible(true);
                 _this.byId("btnTabLayoutMatAttrib").setVisible(true);
-                _this.onTableResize("MatAttrib","Min");
+
+                // Sharepoint issue#478
+                // _this.byId("btnFullScreenMatAttrib").setVisible(true);
+                // _this.onTableResize("MatAttrib","Min");
+                _this.byId("btnExitFullScreenMatAttrib").setVisible(true);
+
                 _this.setRowReadMode("matAttrib");
                 _this.getView().getModel("matAttrib").setProperty("/", _this._oDataBeforeChange);
                 _this._aInvalidValueState = [];
@@ -1267,10 +1271,18 @@ sap.ui.define([
                     this.byId("btnCancel" + pTable).setVisible(false);
                     this.byId("btnDelete" + pTable).setVisible(true);
                     this.byId("btnRefresh" + pTable).setVisible(true);
-                    this.byId("btnFullScreen" + pTable).setVisible(true);
-                    this.onTableResize(pTable, "Min");
-                    this.byId("btnExitFullScreen" + pTable).setVisible(false);
-                    this.byId("btnTabLayout" + pTable).setVisible(false);
+                    this.byId("btnTabLayout" + pTable).setVisible(true);
+
+                    // Sharepoint issue#478
+                    if (pTable == "MatAttrib") {
+                        this.byId("btnFullScreen" + pTable).setVisible(false);
+                        this.byId("btnExitFullScreen" + pTable).setVisible(true);
+                    }
+                    else {
+                        this.byId("btnFullScreen" + pTable).setVisible(true);
+                        this.byId("btnExitFullScreen" + pTable).setVisible(false);
+                        this.onTableResize(pTable, "Min");
+                    }
                 }
             },
 
